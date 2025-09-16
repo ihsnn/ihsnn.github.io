@@ -1,14 +1,24 @@
 import { useRecoilState } from 'recoil'
 import '../../gameboy.css'
-import { powerOnState } from '../../Atom'
+import { gameBoyMenuIndexState, powerOnState } from '../../Atom'
 import GameboyScreen from './GameboyScreen'
 import { scrollDown, scrollToBottom, scrollToTop, scrollUp } from '../../Helper'
 import { useLocation, useNavigate } from 'react-router-dom'
+import useSound from 'use-sound'
+import beep from '../../assets/sounds/beep.wav'
+import boop from '../../assets/sounds/boop.wav'
+// import whoop from '../../assets/sounds/whoop.wav'
+import { useRef } from 'react'
 
 export default function GameboyMain() {
     const location = useLocation()
     const navigate = useNavigate()
     const [powerOn, setPowerOn] = useRecoilState(powerOnState)
+    const [indexSelected, setIndexSelected] = useRecoilState(gameBoyMenuIndexState)
+    const audioRef = useRef<any>(null)
+    const [playBeep] = useSound(beep, {volume: 0.50})
+    const [playBoop] = useSound(boop, {volume: 0.50})
+    // const [playWhoop] = useSound(whoop, {volume: 0.50})
 
     function onClickButton(id:string) {
         console.log(id)
@@ -18,8 +28,9 @@ export default function GameboyMain() {
     function handleButtonMessage(id:string) {
         console.log(location.pathname)
         if (location?.pathname === '/') {
-            if (id === 'controller_b') {
-                navigate('/message')
+            playBeep()
+            if (id === 'controller_b' || id === 'controller_start') {
+                navigate('/menu')
             }
         } else if (location?.pathname === '/message') {
             if (id === 'controller_up') {
@@ -30,14 +41,32 @@ export default function GameboyMain() {
                 scrollToTop()
             } else if (id === 'controller_right') {
                 scrollToBottom()
-            } else if ( id === 'controller_start') {
+            } else if (id === 'controller_start') {
+                navigate('/')
+            }
+        } else if (location?.pathname === '/menu') {
+            if (id === 'controller_up') {
+                playBeep()
+                if (indexSelected > 0) {
+                    setIndexSelected(indexSelected-1)
+                }
+            } else if (id === 'controller_down') {
+                playBeep()
+                if (indexSelected < 3) {
+                    setIndexSelected(indexSelected+1)
+                }
+            } if (id === 'controller_a') {
+                playBoop()
+                navigate('/')
+            } else if (id === 'controller_b') {
+                playBeep()
                 navigate('/')
             }
         }
     }
 
     return (
-        <div className={`gameboy ${powerOn ? 'power-on' : ''}`} style={{scale:'0.7'}}>
+        <div ref={audioRef} className={`gameboy ${powerOn ? 'power-on' : ''}`} style={{scale:'0.7'}}>
             <div className="front-plate">
             <div className="front-plate-head">
                 <div className="vertical-stripe"></div>

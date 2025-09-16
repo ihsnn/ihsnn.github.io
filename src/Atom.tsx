@@ -20,6 +20,22 @@ export const gameboyWidthState = atom({
     default: 0
 })
 
+export const gameBoyMenuState = atom({
+    key: 'gameBoyMenu',
+    default: [
+        'start',
+        'message',
+        'gallery',
+        'music',
+    ]
+})
+
+export const gameBoyMenuIndexState = atom({
+    key: 'gameBoyMenuIndex',
+    default: 0
+})
+
+
 
 // export const 
 
