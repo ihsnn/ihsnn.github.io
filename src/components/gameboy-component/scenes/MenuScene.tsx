@@ -23,7 +23,7 @@ export default function MenuScene() {
     }
     
     return (
-        <div id="scroll" className='w-full h-full flex justify-center items-center flex-col'>
+        <div id="scroll" className='w-full flex justify-center items-center flex-col'>
             <div style={{fontSize:'40pt', marginBottom:'20px'}}>MENU</div>
             <div className="w-full flex justify-center items-center flex-col" style={{fontSize:'20pt'}}>
                 {listMenu()}

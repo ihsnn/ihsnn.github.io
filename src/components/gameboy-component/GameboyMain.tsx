@@ -1,6 +1,6 @@
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import '../../gameboy.css'
-import { gameBoyMenuIndexState, powerOnState } from '../../Atom'
+import { gameBoyGalleryIndexState, gameBoyMenuIndexState, gameBoyMenuState, gameBoyMessageIndexState, gameBoyMessageState, gameBoyMusicIndexState, gameBoyMusicState, openEnvelopeState, powerOnState } from '../../Atom'
 import GameboyScreen from './GameboyScreen'
 import { scrollDown, scrollToBottom, scrollToTop, scrollUp } from '../../Helper'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -14,10 +14,17 @@ export default function GameboyMain() {
     const location = useLocation()
     const navigate = useNavigate()
     const [powerOn, setPowerOn] = useRecoilState(powerOnState)
-    const [indexSelected, setIndexSelected] = useRecoilState(gameBoyMenuIndexState)
+    const menus = useRecoilValue(gameBoyMenuState)
+    const messages = useRecoilValue(gameBoyMessageState)
+    const musics = useRecoilValue(gameBoyMusicState)
+    const [indexMenuSelected, setIndexMenuSelected] = useRecoilState(gameBoyMenuIndexState)
+    const [indexMessageSelected, setIndexMessageSelected] = useRecoilState(gameBoyMessageIndexState)
+    const [indexMusicSelected, setIndexMusicSelected] = useRecoilState(gameBoyMusicIndexState)
+    const [indexGallery, setIndexGallery] = useRecoilState(gameBoyGalleryIndexState)
     const audioRef = useRef<any>(null)
     const [playBeep] = useSound(beep, {volume: 0.50})
     const [playBoop] = useSound(boop, {volume: 0.50})
+    const [openEnvelope, setOpenEnvelope] = useRecoilState(openEnvelopeState)
     // const [playWhoop] = useSound(whoop, {volume: 0.50})
 
     function onClickButton(id:string) {
@@ -26,41 +33,160 @@ export default function GameboyMain() {
     }
 
     function handleButtonMessage(id:string) {
-        console.log(location.pathname)
-        if (location?.pathname === '/') {
-            playBeep()
-            if (id === 'controller_b' || id === 'controller_start') {
-                navigate('/menu')
-            }
-        } else if (location?.pathname === '/message') {
-            if (id === 'controller_up') {
-                scrollUp()
-            } else if (id === 'controller_down') {
-                scrollDown()
-            } else if (id === 'controller_left') {
-                scrollToTop()
-            } else if (id === 'controller_right') {
-                scrollToBottom()
-            } else if (id === 'controller_start') {
-                navigate('/')
-            }
-        } else if (location?.pathname === '/menu') {
-            if (id === 'controller_up') {
+        if (powerOn) {
+            console.log(location.pathname)
+            if (location?.pathname === '/') {
                 playBeep()
-                if (indexSelected > 0) {
-                    setIndexSelected(indexSelected-1)
+                if (id === 'controller_b' || id === 'controller_start') {
+                    navigate('/menu')
                 }
-            } else if (id === 'controller_down') {
-                playBeep()
-                if (indexSelected < 3) {
-                    setIndexSelected(indexSelected+1)
+            } else if (location?.pathname === '/message') {
+                if (id === 'controller_up') {
+                    playBeep()
+                    if (indexMessageSelected > 0) {
+                        setIndexMessageSelected(indexMessageSelected-1)
+                    }
+                } else if (id === 'controller_down') {
+                    playBeep()
+                    if (indexMessageSelected < messages?.length-1) {
+                        setIndexMessageSelected(indexMessageSelected+1)
+                    }
+                } else if (id === 'controller_a') {
+                    playBoop()
+                    navigate('/menu')
+                } else if (id === 'controller_b') {
+                    playBeep()
+                    navigate('/message-display')
                 }
-            } if (id === 'controller_a') {
-                playBoop()
-                navigate('/')
-            } else if (id === 'controller_b') {
-                playBeep()
-                navigate('/')
+            } else if (location?.pathname === '/message-display') {
+                if (id === 'controller_up') {
+                    playBeep()
+                    scrollUp()
+                } else if (id === 'controller_down') {
+                    playBeep()
+                    scrollDown()
+                } else if (id === 'controller_left') {
+                    playBeep()
+                    scrollToTop()
+                } else if (id === 'controller_right') {
+                    playBeep()
+                    scrollToBottom()
+                } else if (id === 'controller_start') {
+                    playBoop()
+                    navigate('/')
+                } else if (id === 'controller_b') {
+                    playBeep()
+                    if (openEnvelope === true) {
+                        navigate('/message')
+                    } else {
+                        setOpenEnvelope(true)
+                    }
+                } else if (id === 'controller_a') {
+                    playBoop()
+                    if (openEnvelope === true) {
+                        setOpenEnvelope(false)
+                    } else {
+                        navigate('/message')
+                    }
+                }
+            } else if (location?.pathname === '/menu') {
+                if (id === 'controller_up') {
+                    playBeep()
+                    if (indexMenuSelected > 0) {
+                        setIndexMenuSelected(indexMenuSelected-1)
+                    }
+                } else if (id === 'controller_down') {
+                    playBeep()
+                    if (indexMenuSelected < menus?.length-1) {
+                        setIndexMenuSelected(indexMenuSelected+1)
+                    }
+                } else if (id === 'controller_a') {
+                    playBoop()
+                    navigate('/')
+                } else if (id === 'controller_b') {
+                    playBeep()
+                    navigate('/' + menus[indexMenuSelected])
+                }
+            } else if (location?.pathname === '/start') {
+                if (id === 'controller_a') {
+                    playBoop()
+                    navigate('/menu')
+                } else if (id === 'controller_b') {
+                    playBeep()
+                    navigate('/message')
+                }
+            } else if (location?.pathname === '/music') {
+                if (id === 'controller_up') {
+                    playBeep()
+                    if (indexMusicSelected > 0) {
+                        scrollUp()
+                        setIndexMusicSelected(indexMusicSelected-1)
+                    }
+                } else if (id === 'controller_down') {
+                    playBeep()
+                    if (indexMusicSelected < musics?.length-1) {
+                        scrollDown()
+                        setIndexMusicSelected(indexMusicSelected+1)
+                    }
+                } else if (id === 'controller_a') {
+                    playBoop()
+                    navigate('/menu')
+                } else if (id === 'controller_b') {
+                    playBeep()
+                    navigate('/music-display')
+                }
+            } else if (location?.pathname === '/music-display') {
+                if (id === 'controller_up') {
+                    playBeep()
+                } else if (id === 'controller_down') {
+                    playBeep()
+                } else if (id === 'controller_left') {
+                    playBeep()
+                } else if (id === 'controller_right') {
+                    playBeep()
+                } else if (id === 'controller_start') {
+                    playBoop()
+                    navigate('/')
+                } else if (id === 'controller_b') {
+                    playBeep()
+                    navigate('/music')
+                } else if (id === 'controller_a') {
+                    playBoop()
+                    navigate('/music')
+                }
+            } else if (location?.pathname === '/gallery') {
+                if (id === 'controller_up') {
+                    playBeep()
+                    if (indexGallery > 0) {
+                        setIndexGallery(indexGallery-1)
+                    }
+                } else if (id === 'controller_down') {
+                    playBeep()
+                    if (indexGallery < 8) {
+                        setIndexGallery(indexGallery+1)
+                    }
+                } else if (id === 'controller_left') {
+                    playBeep()
+                    if (indexGallery > 0) {
+                        setIndexGallery(indexGallery-1)
+                    }
+                } else if (id === 'controller_right') {
+                    playBeep()
+                    if (indexGallery < 8) {
+                        setIndexGallery(indexGallery+1)
+                    }
+                } else if (id === 'controller_start') {
+                    playBoop()
+                    navigate('/')
+                } else if (id === 'controller_b') {
+                    playBeep()
+                    if (indexGallery < 8) {
+                        setIndexGallery(indexGallery+1)
+                    }
+                } else if (id === 'controller_a') {
+                    playBoop()
+                    navigate('/menu')
+                }
             }
         }
     }

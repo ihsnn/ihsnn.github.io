@@ -19,7 +19,7 @@ export function scrollUp() {
   // element.scrollTop = element.scrollHeight;
   // element.scrollBy(0, element.scrollHeight);
   element.scrollBy({
-    top:-100,
+    top:-50,
     behavior:'smooth'
   });
 }
@@ -27,7 +27,7 @@ export function scrollUp() {
 export function scrollDown() {
   const element = document.getElementById('scroll')!
   element.scrollBy({
-    top:100,
+    top:50,
     behavior:'smooth'
   });
 }

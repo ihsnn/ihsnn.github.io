@@ -6,8 +6,16 @@ import { powerOnState } from '../../Atom';
 import useSound from 'use-sound';
 import musicHappy1 from '../../assets/sounds/music-happy-1.mp3'
 import musicHappy2 from '../../assets/sounds/music-happy-2.mp3'
+import musicHappy3 from '../../assets/sounds/music-happy-3.mp3'
+import musicHappy4 from '../../assets/sounds/music-happy-4.mp3'
+import musicRelax1 from '../../assets/sounds/music-relax-1.mp3'
 import { useEffect } from "react";
 import MenuScene from './scenes/MenuScene';
+import StartScene from './scenes/StartScene';
+import MessageList from './scenes/MessageList';
+import MusicList from './scenes/MusicList';
+import MusicDisplay from './scenes/MusicDisplay';
+import Gallery from './scenes/Gallery';
 
 export default function GameboyScreen() {
     const powerOn = useRecoilValue(powerOnState)
@@ -16,6 +24,9 @@ export default function GameboyScreen() {
 
     const [playHappyMusic1, {stop: stopHappyMusic1}] = useSound(musicHappy1)
     const [playHappyMusic2, {stop: stopHappyMusic2}] = useSound(musicHappy2)
+    const [playHappyMusic3, {stop: stopHappyMusic3}] = useSound(musicHappy3)
+    const [playHappyMusic4, {stop: stopHappyMusic4}] = useSound(musicHappy4)
+    const [playRelaxMusic1, {stop: stopRelaxMusic1}] = useSound(musicRelax1)
 
     useEffect(() => {
         if (powerOn === true) {
@@ -25,8 +36,14 @@ export default function GameboyScreen() {
                     playHappyMusic1()
                 } else if (location.pathname === '/message') {
                     playHappyMusic2()
+                } else if (location.pathname === '/start') {
+                    playHappyMusic3()
+                } else if (location.pathname === '/gallery') {
+                    playHappyMusic4()
+                } else if (location.pathname === '/message-display') {
+                    playRelaxMusic1()
                 }
-            }, 50)
+            }, 100)
             return (() => clearTimeout(delay))
         } else {
             stopAllSound()
@@ -38,10 +55,10 @@ export default function GameboyScreen() {
             stopHappyMusic1()
         }
         stopHappyMusic2()
+        stopHappyMusic3()
+        stopHappyMusic4()
+        stopRelaxMusic1()
     }
-    
-    const text = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'
-
     
     return (
         <div id="scroll" className='w-full h-full p-4 scroll'>
@@ -49,7 +66,12 @@ export default function GameboyScreen() {
                 <Routes>
                     <Route path="/" element={<OpeningScene/>} />
                     <Route path="/menu" element={<MenuScene/>} />
-                    <Route path="/message" element={<TextMessage text={text}/>} />
+                    <Route path="/start" element={<StartScene/>} />
+                    <Route path="/message" element={<MessageList/>}/>
+                    <Route path="/message-display" element={<TextMessage/>}/>
+                    <Route path="/music" element={<MusicList/>}/>
+                    <Route path="/music-display" element={<MusicDisplay/>}/>
+                    <Route path="/Gallery" element={<Gallery/>}/>
                 </Routes>
             ) : (
                 <div className='flex justify-center items-center w-full h-full opacity-10' style={{fontSize:'20pt'}}>Turn On to Start</div>
