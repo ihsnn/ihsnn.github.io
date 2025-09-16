@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/atom.tsx","./src/helper.tsx","./src/routing.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/gameboy-component/gameboymain.tsx","./src/components/gameboy-component/gameboyscreen.tsx","./src/components/gameboy-component/scenes/openingscene.tsx","./src/components/gameboy-component/scenes/textmessage.tsx"],"version":"5.6.3"}
