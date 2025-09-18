@@ -16,10 +16,6 @@ export default function Routing() {
   
     window.onresize = reportWindowSize
 
-    window.onkeydown = function(event) {
-        console.log(event.key)
-    }
-
     useEffect(() => {
         if (isMobile) {
             document.body.requestFullscreen()

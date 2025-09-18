@@ -25,22 +25,55 @@ export default function GameboyMain() {
     const [playBeep] = useSound(beep, {volume: 0.50})
     const [playBoop] = useSound(boop, {volume: 0.50})
     const [openEnvelope, setOpenEnvelope] = useRecoilState(openEnvelopeState)
-    // const [playWhoop] = useSound(whoop, {volume: 0.50})
 
     function onClickButton(id:string) {
-        console.log(id)
         handleButtonMessage(id)
     }
 
     function handleButtonMessage(id:string) {
         if (powerOn) {
-            console.log(location.pathname)
+            // OPENING SCENE
             if (location?.pathname === '/') {
                 playBeep()
                 if (id === 'controller_b' || id === 'controller_start') {
                     navigate('/menu')
                 }
-            } else if (location?.pathname === '/message') {
+            }
+
+            // MENU
+            else if (location?.pathname === '/menu') {
+                if (id === 'controller_up') {
+                    playBeep()
+                    if (indexMenuSelected > 0) {
+                        setIndexMenuSelected(indexMenuSelected-1)
+                    }
+                } else if (id === 'controller_down') {
+                    playBeep()
+                    if (indexMenuSelected < menus?.length-1) {
+                        setIndexMenuSelected(indexMenuSelected+1)
+                    }
+                } else if (id === 'controller_a') {
+                    playBoop()
+                    navigate('/')
+                } else if (id === 'controller_b') {
+                    playBeep()
+                    navigate('/' + menus[indexMenuSelected])
+                }
+            } 
+
+            // START
+            else if (location?.pathname === '/start') {
+                if (id === 'controller_a') {
+                    playBoop()
+                    navigate('/menu')
+                } else if (id === 'controller_b') {
+                    playBeep()
+                    navigate('/message')
+                }
+            } 
+
+            // MESSAGE
+            else if (location?.pathname === '/message') {
                 if (id === 'controller_up') {
                     playBeep()
                     if (indexMessageSelected > 0) {
@@ -58,7 +91,8 @@ export default function GameboyMain() {
                     playBeep()
                     navigate('/message-display')
                 }
-            } else if (location?.pathname === '/message-display') {
+            } 
+            else if (location?.pathname === '/message-display') {
                 if (id === 'controller_up') {
                     playBeep()
                     scrollUp()
@@ -89,72 +123,10 @@ export default function GameboyMain() {
                         navigate('/message')
                     }
                 }
-            } else if (location?.pathname === '/menu') {
-                if (id === 'controller_up') {
-                    playBeep()
-                    if (indexMenuSelected > 0) {
-                        setIndexMenuSelected(indexMenuSelected-1)
-                    }
-                } else if (id === 'controller_down') {
-                    playBeep()
-                    if (indexMenuSelected < menus?.length-1) {
-                        setIndexMenuSelected(indexMenuSelected+1)
-                    }
-                } else if (id === 'controller_a') {
-                    playBoop()
-                    navigate('/')
-                } else if (id === 'controller_b') {
-                    playBeep()
-                    navigate('/' + menus[indexMenuSelected])
-                }
-            } else if (location?.pathname === '/start') {
-                if (id === 'controller_a') {
-                    playBoop()
-                    navigate('/menu')
-                } else if (id === 'controller_b') {
-                    playBeep()
-                    navigate('/message')
-                }
-            } else if (location?.pathname === '/music') {
-                if (id === 'controller_up') {
-                    playBeep()
-                    if (indexMusicSelected > 0) {
-                        scrollUp()
-                        setIndexMusicSelected(indexMusicSelected-1)
-                    }
-                } else if (id === 'controller_down') {
-                    playBeep()
-                    if (indexMusicSelected < musics?.length-1) {
-                        scrollDown()
-                        setIndexMusicSelected(indexMusicSelected+1)
-                    }
-                } else if (id === 'controller_a') {
-                    playBoop()
-                    navigate('/menu')
-                } else if (id === 'controller_b') {
-                    playBeep()
-                    navigate('/music-display')
-                }
-            } else if (location?.pathname === '/music-display') {
-                if (id === 'controller_up') {
-                    playBeep()
-                } else if (id === 'controller_down') {
-                    playBeep()
-                } else if (id === 'controller_left') {
-                    playBeep()
-                } else if (id === 'controller_right') {
-                    playBeep()
-                } else if (id === 'controller_start') {
-                    playBoop()
-                    navigate('/')
-                } else if (id === 'controller_b') {
-                    playBeep()
-                    navigate('/music')
-                } else if (id === 'controller_a') {
-                    playBoop()
-                    navigate('/music')
-                }
-            } else if (location?.pathname === '/gallery') {
+            } 
+
+            // GALLERY
+            else if (location?.pathname === '/gallery') {
                 if (id === 'controller_up') {
                     playBeep()
                     if (indexGallery > 0) {
@@ -188,6 +160,50 @@ export default function GameboyMain() {
                     navigate('/menu')
                 }
             }
+            
+            // MUSIC
+            else if (location?.pathname === '/music') {
+                if (id === 'controller_up') {
+                    playBeep()
+                    if (indexMusicSelected > 0) {
+                        scrollUp()
+                        setIndexMusicSelected(indexMusicSelected-1)
+                    }
+                } else if (id === 'controller_down') {
+                    playBeep()
+                    if (indexMusicSelected < musics?.length-1) {
+                        scrollDown()
+                        setIndexMusicSelected(indexMusicSelected+1)
+                    }
+                } else if (id === 'controller_a') {
+                    playBoop()
+                    navigate('/menu')
+                } else if (id === 'controller_b') {
+                    playBeep()
+                    navigate('/music-display')
+                }
+            } 
+            else if (location?.pathname === '/music-display') {
+                if (id === 'controller_up') {
+                    playBeep()
+                } else if (id === 'controller_down') {
+                    playBeep()
+                } else if (id === 'controller_left') {
+                    playBeep()
+                } else if (id === 'controller_right') {
+                    playBeep()
+                } else if (id === 'controller_start') {
+                    playBoop()
+                    navigate('/')
+                } else if (id === 'controller_b') {
+                    playBeep()
+                    navigate('/music')
+                } else if (id === 'controller_a') {
+                    playBoop()
+                    navigate('/music')
+                }
+            } 
+            
         }
     }
 
