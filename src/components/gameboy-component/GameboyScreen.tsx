@@ -32,15 +32,15 @@ export default function GameboyScreen() {
         if (powerOn === true) {
             stopAllSound()
             const delay = setTimeout(()=> {
-                if (location.pathname === '/') {
+                if (location.pathname === '/gameboy') {
                     playHappyMusic1()
-                } else if (location.pathname === '/message') {
+                } else if (location.pathname === '/gameboy/message') {
                     playHappyMusic2()
-                } else if (location.pathname === '/start') {
+                } else if (location.pathname === '/gameboy/start') {
                     playHappyMusic3()
-                } else if (location.pathname === '/gallery') {
+                } else if (location.pathname === '/gameboy/gallery') {
                     playHappyMusic4()
-                } else if (location.pathname === '/message-display') {
+                } else if (location.pathname === '/gameboy/message-display') {
                     playRelaxMusic1()
                 }
             }, 100)
@@ -51,7 +51,7 @@ export default function GameboyScreen() {
     }, [powerOn, location.pathname])
 
     function stopAllSound() {
-        if (location.pathname !== '/menu') {
+        if (location.pathname !== '/gameboy/menu') {
             stopHappyMusic1()
         }
         stopHappyMusic2()
@@ -65,13 +65,13 @@ export default function GameboyScreen() {
             {powerOn ? (
                 <Routes>
                     <Route path="/" element={<OpeningScene/>} />
-                    <Route path="/menu" element={<MenuScene/>} />
-                    <Route path="/start" element={<StartScene/>} />
-                    <Route path="/message" element={<MessageList/>}/>
-                    <Route path="/message-display" element={<TextMessage/>}/>
-                    <Route path="/music" element={<MusicList/>}/>
-                    <Route path="/music-display" element={<MusicDisplay/>}/>
-                    <Route path="/Gallery" element={<Gallery/>}/>
+                    <Route path="menu" element={<MenuScene/>} />
+                    <Route path="start" element={<StartScene/>} />
+                    <Route path="message" element={<MessageList/>}/>
+                    <Route path="message-display" element={<TextMessage/>}/>
+                    <Route path="music" element={<MusicList/>}/>
+                    <Route path="music-display" element={<MusicDisplay/>}/>
+                    <Route path="Gallery" element={<Gallery/>}/>
                 </Routes>
             ) : (
                 <div className='flex justify-center items-center w-full h-full opacity-10' style={{fontSize:'20pt'}}>Turn On to Start</div>

@@ -27,6 +27,7 @@ export const gameBoyMenuState = atom({
         'message',
         'gallery',
         'music',
+        'pokescan',
     ]
 })
 

@@ -1,0 +1,200 @@
+.hub-page {
+  --case: #1a1a1f;
+  --case-light: #232329;
+  --paper: #eae6da;
+  --paper-dim: #a9a598;
+  --led: #5ee6c8;
+  --led-dim: #2b7a6c;
+
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 900px 500px at 50% -10%, #26262e, transparent),
+    var(--case);
+  color: var(--paper);
+  font-family: 'Inter', -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  padding: 56px 20px 80px;
+}
+
+.hub-page * {
+  box-sizing: border-box;
+}
+
+.hub-shell {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+.hub-page .hub-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.hub-page .hub-led {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--led);
+  box-shadow: 0 0 0 4px rgba(94, 230, 200, 0.12), 0 0 14px var(--led);
+  flex-shrink: 0;
+  animation: hub-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes hub-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.hub-page .hub-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--led);
+  margin-bottom: 4px;
+}
+
+.hub-page .hub-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 20px;
+  line-height: 1.4;
+  margin: 0;
+  color: var(--paper);
+}
+
+/* ---------- Bio ---------- */
+.hub-page .hub-bio {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--paper-dim);
+  max-width: 58ch;
+  margin: 0 0 44px;
+}
+
+.hub-page .hub-bio__hint {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  color: var(--led-dim);
+}
+
+/* ---------- Shelf ---------- */
+.hub-page .hub-shelf-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--paper-dim);
+  margin-bottom: 16px;
+}
+
+.hub-page .hub-shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* ---------- Cartridge ---------- */
+.hub-page .cartridge {
+  --cart-color: #8b8f98;
+  --cart-color-dark: #5c6068;
+  --cart-label: #eae6da;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  background: linear-gradient(160deg, var(--cart-color) 0%, var(--cart-color-dark) 100%);
+  border-radius: 10px 10px 6px 6px;
+  padding: 20px 18px 16px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  overflow: hidden;
+}
+
+.hub-page .cartridge:hover,
+.hub-page .cartridge:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.hub-page .cartridge:focus-visible {
+  outline: 2px solid var(--led);
+  outline-offset: 3px;
+}
+
+.hub-page .cartridge__notch {
+  position: absolute;
+  top: 0;
+  right: 22px;
+  width: 34px;
+  height: 12px;
+  background: var(--case);
+  border-radius: 0 0 6px 6px;
+}
+
+.hub-page .cartridge__no {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 1px;
+  color: rgba(0, 0, 0, 0.45);
+  margin-bottom: 10px;
+}
+
+.hub-page .cartridge__title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  color: var(--cart-label);
+  line-height: 1.6;
+  margin-bottom: 8px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.hub-page .cartridge__tagline {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.55);
+  margin-bottom: 16px;
+}
+
+.hub-page .cartridge__cta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.hub-page .cartridge__pins {
+  display: flex;
+  gap: 4px;
+  margin-top: 14px;
+}
+
+.hub-page .cartridge__pins i {
+  display: block;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(180deg, #e8d48a, #b8973f);
+  border-radius: 1px;
+}
+
+/* ---------- Footer ---------- */
+.hub-page .hub-footer {
+  margin-top: 40px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--paper-dim);
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-page .hub-led {
+    animation: none;
+  }
+  .hub-page .cartridge {
+    transition: none;
+  }
+}

@@ -29,6 +29,7 @@
     "react-type-animation": "^3.2.0",
     "recoil": "^0.7.7",
     "sweetalert2": "^11.14.4",
+    "tesseract.js": "^7.0.0",
     "use-sound": "^5.0.0"
   },
   "devDependencies": {

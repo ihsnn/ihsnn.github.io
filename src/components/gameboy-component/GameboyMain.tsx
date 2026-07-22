@@ -1,5 +1,5 @@
 import { useRecoilState, useRecoilValue } from 'recoil'
-import '../../gameboy.css'
+import '../gameboy-component/gameboy.css'
 import { gameBoyGalleryIndexState, gameBoyMenuIndexState, gameBoyMenuState, gameBoyMessageIndexState, gameBoyMessageState, gameBoyMusicIndexState, gameBoyMusicState, openEnvelopeState, powerOnState } from '../../Atom'
 import GameboyScreen from './GameboyScreen'
 import { scrollDown, scrollToBottom, scrollToTop, scrollUp } from '../../Helper'
@@ -33,15 +33,15 @@ export default function GameboyMain() {
     function handleButtonMessage(id:string) {
         if (powerOn) {
             // OPENING SCENE
-            if (location?.pathname === '/') {
+            if (location?.pathname === '/gameboy') {
                 playBeep()
                 if (id === 'controller_b' || id === 'controller_start') {
-                    navigate('/menu')
+                    navigate('/gameboy/menu')
                 }
             }
 
             // MENU
-            else if (location?.pathname === '/menu') {
+            else if (location?.pathname === '/gameboy/menu') {
                 if (id === 'controller_up') {
                     playBeep()
                     if (indexMenuSelected > 0) {
@@ -54,26 +54,33 @@ export default function GameboyMain() {
                     }
                 } else if (id === 'controller_a') {
                     playBoop()
-                    navigate('/')
+                    navigate('/gameboy')
                 } else if (id === 'controller_b') {
                     playBeep()
-                    navigate('/' + menus[indexMenuSelected])
+                    const selected = menus[indexMenuSelected]
+                    // 'pokescan' lives outside the console's own route tree —
+                    // it's a full standalone page, not a scene inside the screen.
+                    if (selected === 'pokescan') {
+                        navigate('/pokescan')
+                    } else {
+                        navigate('/gameboy/' + selected)
+                    }
                 }
             } 
 
             // START
-            else if (location?.pathname === '/start') {
+            else if (location?.pathname === '/gameboy/start') {
                 if (id === 'controller_a') {
                     playBoop()
-                    navigate('/menu')
+                    navigate('/gameboy/menu')
                 } else if (id === 'controller_b') {
                     playBeep()
-                    navigate('/message')
+                    navigate('/gameboy/message')
                 }
             } 
 
             // MESSAGE
-            else if (location?.pathname === '/message') {
+            else if (location?.pathname === '/gameboy/message') {
                 if (id === 'controller_up') {
                     playBeep()
                     if (indexMessageSelected > 0) {
@@ -86,13 +93,13 @@ export default function GameboyMain() {
                     }
                 } else if (id === 'controller_a') {
                     playBoop()
-                    navigate('/menu')
+                    navigate('/gameboy/menu')
                 } else if (id === 'controller_b') {
                     playBeep()
-                    navigate('/message-display')
+                    navigate('/gameboy/message-display')
                 }
             } 
-            else if (location?.pathname === '/message-display') {
+            else if (location?.pathname === '/gameboy/message-display') {
                 if (id === 'controller_up') {
                     playBeep()
                     scrollUp()
@@ -111,7 +118,7 @@ export default function GameboyMain() {
                 } else if (id === 'controller_b') {
                     playBeep()
                     if (openEnvelope === true) {
-                        navigate('/message')
+                        navigate('/gameboy/message')
                     } else {
                         setOpenEnvelope(true)
                     }
@@ -120,13 +127,13 @@ export default function GameboyMain() {
                     if (openEnvelope === true) {
                         setOpenEnvelope(false)
                     } else {
-                        navigate('/message')
+                        navigate('/gameboy/message')
                     }
                 }
             } 
 
             // GALLERY
-            else if (location?.pathname === '/gallery') {
+            else if (location?.pathname === '/gameboy/gallery') {
                 if (id === 'controller_up') {
                     playBeep()
                     if (indexGallery > 0) {
@@ -157,12 +164,12 @@ export default function GameboyMain() {
                     }
                 } else if (id === 'controller_a') {
                     playBoop()
-                    navigate('/menu')
+                    navigate('/gameboy/menu')
                 }
             }
             
             // MUSIC
-            else if (location?.pathname === '/music') {
+            else if (location?.pathname === '/gameboy/music') {
                 if (id === 'controller_up') {
                     playBeep()
                     if (indexMusicSelected > 0) {
@@ -177,13 +184,13 @@ export default function GameboyMain() {
                     }
                 } else if (id === 'controller_a') {
                     playBoop()
-                    navigate('/menu')
+                    navigate('/gameboy/menu')
                 } else if (id === 'controller_b') {
                     playBeep()
-                    navigate('/music-display')
+                    navigate('/gameboy/music-display')
                 }
             } 
-            else if (location?.pathname === '/music-display') {
+            else if (location?.pathname === '/gameboy/music-display') {
                 if (id === 'controller_up') {
                     playBeep()
                 } else if (id === 'controller_down') {
@@ -197,10 +204,10 @@ export default function GameboyMain() {
                     navigate('/')
                 } else if (id === 'controller_b') {
                     playBeep()
-                    navigate('/music')
+                    navigate('/gameboy/music')
                 } else if (id === 'controller_a') {
                     playBoop()
-                    navigate('/music')
+                    navigate('/gameboy/music')
                 }
             } 
             
