@@ -1,14 +1,20 @@
 import { RecoilRoot } from 'recoil'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
 import Routing from './Routing'
+import PokeScanPage from './pokescan/PokeScanPage'
+import LandingPage from './landing/LandingPage'
 
 function App() {
 
   return (
     <RecoilRoot>
       <BrowserRouter>
-        <Routing/>
+        <Routes>
+          <Route path="/" element={<LandingPage/>} />
+          <Route path="/pokescan" element={<PokeScanPage/>} />
+          <Route path="/gameboy/*" element={<Routing/>} />
+        </Routes>
       </BrowserRouter>
     </RecoilRoot>
   )

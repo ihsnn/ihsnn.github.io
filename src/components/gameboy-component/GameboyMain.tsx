@@ -1,5 +1,5 @@
 import { useRecoilState, useRecoilValue } from 'recoil'
-import '../gameboy-component/gameboy.css'
+import '../../gameboy.css'
 import { gameBoyGalleryIndexState, gameBoyMenuIndexState, gameBoyMenuState, gameBoyMessageIndexState, gameBoyMessageState, gameBoyMusicIndexState, gameBoyMusicState, openEnvelopeState, powerOnState } from '../../Atom'
 import GameboyScreen from './GameboyScreen'
 import { scrollDown, scrollToBottom, scrollToTop, scrollUp } from '../../Helper'
