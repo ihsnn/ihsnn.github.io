@@ -4,19 +4,23 @@ import Scanner from './components/Scanner'
 import PokedexCard from './components/PokedexCard'
 import ManualCorrection from './components/ManualCorrection'
 import { recognizePokemon, RecognitionError } from './services/recognize'
-import { getPokemonByName, PokeApiError } from './services/pokeapi'
-import type { Confidence, Pokemon } from './types'
+import { getCardById, TcgdexError } from './services/tcgdex'
+import type { Confidence, TcgCard } from './types'
 import './pokescan.css'
+import { faArrowLeftLong, faRepeat } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 type Status = 'idle' | 'recognizing' | 'looking_up' | 'done' | 'error'
 
 export default function PokeScanPage() {
   const [status, setStatus] = useState<Status>('idle')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [pokemon, setPokemon] = useState<Pokemon | null>(null)
+  const [card, setCard] = useState<TcgCard | null>(null)
   const [confidence, setConfidence] = useState<Confidence | null>(null)
   const [rawText, setRawText] = useState<string | null>(null)
+  const [cleanedText, setCleanedText] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [debugImage, setDebugImage] = useState<string | null>(null)
 
   useEffect(() => {
     return () => {
@@ -26,26 +30,27 @@ export default function PokeScanPage() {
 
   async function handleImageSelected(file: File) {
     setError(null)
-    setPokemon(null)
+    setCard(null)
     setRawText(null)
+    setDebugImage(null)
+    setCleanedText(null)
     setPreviewUrl(URL.createObjectURL(file))
     setStatus('recognizing')
 
     try {
       const result = await recognizePokemon(file)
+      setDebugImage(result.debugImage)
+      setCleanedText(result.cleanedText)
       setConfidence(result.confidence)
       setRawText(result.rawText)
-
-      setStatus('looking_up')
-      const data = await getPokemonByName(result.name)
-      setPokemon(data)
+      setCard(result.card)
       setStatus('done')
     } catch (err) {
       console.error(err)
       if (err instanceof RecognitionError) {
         setError(err.message)
-      } else if (err instanceof PokeApiError) {
-        setError(`Read the card but couldn't find a match on the Pokédex.`)
+      } else if (err instanceof TcgdexError) {
+        setError(`Found a name match but couldn't load the card's details.`)
       } else {
         setError('Something went wrong. Try again.')
       }
@@ -53,17 +58,17 @@ export default function PokeScanPage() {
     }
   }
 
-  async function handleManualPick(name: string) {
+  async function handleManualPick(cardId: string) {
     setError(null)
     setStatus('looking_up')
     try {
-      const data = await getPokemonByName(name)
-      setPokemon(data)
+      const data = await getCardById(cardId)
+      setCard(data)
       setConfidence('high')
       setStatus('done')
     } catch (err) {
       console.error(err)
-      setError('Could not find that Pokémon.')
+      setError('Could not load that card.')
       setStatus('error')
     }
   }
@@ -71,24 +76,26 @@ export default function PokeScanPage() {
   function reset() {
     setStatus('idle')
     setPreviewUrl(null)
-    setPokemon(null)
+    setCard(null)
     setRawText(null)
+    setDebugImage(null)
+    setCleanedText(null)
     setError(null)
   }
 
   const scanning = status === 'recognizing' || status === 'looking_up'
   const statusText =
-    status === 'recognizing' ? 'READING CARD NAME...' : status === 'looking_up' ? 'FETCHING DEX DATA...' : ''
+    status === 'recognizing' ? 'READING CARD NAME...' : status === 'looking_up' ? 'FETCHING CARD DATA...' : ''
 
   return (
     <div className="pokescan-page">
       <div className="app-shell">
         <div className="dex-frame">
           <div className="dex-brand">
-            <Link to="/" className="dex-brand__back" title="Back to Game Boy">
-              ←
+            <Link to="/" className="dex-brand__back" title="Back to portfolio">
+              <FontAwesomeIcon icon={faArrowLeftLong}/>
             </Link>
-            <span className="dex-brand__dot" />
+            {/* <span className="dex-brand__dot" /> */}
             <span className="dex-brand__title">
               POKÉ<span>SCAN</span>
             </span>
@@ -114,7 +121,7 @@ export default function PokeScanPage() {
             {status === 'done' && (
               <div className="dex-controls">
                 <button type="button" className="dex-btn dex-btn--primary" onClick={reset}>
-                  🔄 Scan Another
+                  <FontAwesomeIcon icon={faRepeat}/> Scan Another
                 </button>
               </div>
             )}
@@ -136,6 +143,15 @@ export default function PokeScanPage() {
               </div>
             )}
 
+            {debugImage && (
+              <details className="ocr-debug">
+                <summary>What OCR read</summary>
+                <img src={debugImage} alt="Cropped name-band sent to OCR" />
+                {rawText && <p className="ocr-debug__text">"{rawText}"</p>}
+                {cleanedText && <p className="ocr-debug__text">"{cleanedText}"</p>}
+              </details>
+            )}
+
             <div className="dex-grille">
               <span />
               <span />
@@ -143,9 +159,9 @@ export default function PokeScanPage() {
             </div>
           </div>
 
-          {pokemon && (
+          {card && (
             <>
-              <PokedexCard pokemon={pokemon} confidence={confidence} rawText={rawText} />
+              <PokedexCard card={card} confidence={confidence} rawText={rawText} />
               {confidence === 'low' && <ManualCorrection onPick={handleManualPick} inline />}
             </>
           )}

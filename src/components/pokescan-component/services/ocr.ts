@@ -5,7 +5,13 @@ import { createWorker, type Worker } from 'tesseract.js'
 // number — true across nearly every era of card printed. Cropping to just
 // that band (instead of OCR-ing the whole card) cuts out attack text, rules
 // text, and set symbols that would otherwise confuse the matcher.
-const NAME_BAND = { xStart: 0.05, xEnd: 0.72, yStart: 0.035, yEnd: 0.13 }
+const NAME_BAND = { xStart: 0.024, xEnd: 0.695, yStart: 0.024, yEnd: 0.094 }
+
+export interface OcrResult {
+  text: string
+  /** Data URL of exactly what was fed to Tesseract — useful for debugging misreads. */
+  debugImage: string
+}
 
 let workerPromise: Promise<Worker> | null = null
 function getWorker(): Promise<Worker> {
@@ -37,7 +43,7 @@ async function cropNameBand(imageFile: File): Promise<string> {
   const sw = img.width * (xEnd - xStart)
   const sh = img.height * (yEnd - yStart)
 
-  const SCALE = 4
+  const SCALE = 6
   const canvas = document.createElement('canvas')
   canvas.width = sw * SCALE
   canvas.height = sh * SCALE
@@ -53,15 +59,22 @@ async function cropNameBand(imageFile: File): Promise<string> {
 }
 
 /**
- * Reads the card's name band and returns the raw OCR text.
+ * Reads the card's name band and returns the raw OCR text, plus the exact
+ * cropped/processed image that was handed to Tesseract (so callers can show
+ * it for debugging — e.g. to check the crop coordinates or contrast filter
+ * are actually landing on the name, not the artwork).
+ *
  * Falls back to OCR-ing the full image if the cropped band comes back empty
  * (covers non-standard layouts, oversized promo cards, oddly-cropped photos).
+ * In that fallback case, debugImage still shows the (empty-reading) crop,
+ * since that's what's most useful for figuring out why it failed.
  */
-export async function readCardName(imageFile: File): Promise<string> {
+export async function readCardName(imageFile: File): Promise<OcrResult> {
   const worker = await getWorker()
 
   const croppedDataUrl = await cropNameBand(imageFile)
   const { data } = await worker.recognize(croppedDataUrl)
+  console.log(data)
   let text = data.text.trim()
 
   if (!text) {
@@ -69,5 +82,5 @@ export async function readCardName(imageFile: File): Promise<string> {
     text = fullData.text.trim()
   }
 
-  return text
+  return { text, debugImage: croppedDataUrl }
 }

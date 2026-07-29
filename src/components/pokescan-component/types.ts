@@ -1,39 +1,69 @@
-export interface PokemonStat {
+export interface CardBrief {
+  id: string
+  localId: string
   name: string
-  base: number
+  image: string | null
 }
 
-export interface PokemonAbility {
+export interface CardAttack {
   name: string
-  isHidden: boolean
+  cost?: string[]
+  damage?: number | string
+  effect?: string
 }
 
-export interface Pokemon {
-  id: number
+export interface CardWeaknessResistance {
+  type: string
+  value: string
+}
+
+export interface CardSet {
+  id: string
   name: string
-  displayName: string
-  height: number // decimetres
-  weight: number // hectograms
-  types: string[]
-  abilities: PokemonAbility[]
-  stats: PokemonStat[]
-  sprite: string | null
-  spriteShiny: string | null
-  cry: string | null
-  flavorText: string
-  genus: string
-  color: string
+  logo?: string | null
+  symbol?: string | null
+}
+
+export type CardCategory = 'Pokemon' | 'Trainer' | 'Energy'
+
+export interface TcgCard {
+  id: string
+  localId: string
+  name: string
+  image: string | null
+  category: CardCategory
+  illustrator?: string
+  rarity?: string
+  set: CardSet
+
+  // Pokémon-only fields
+  hp?: number
+  types?: string[]
+  evolveFrom?: string
+  description?: string
+  stage?: string
+  attacks?: CardAttack[]
+  weaknesses?: CardWeaknessResistance[]
+  resistances?: CardWeaknessResistance[]
+  retreat?: number
+
+  // Trainer/Energy-only fields
+  effect?: string
+  trainerType?: string
+  energyType?: string
 }
 
 export type Confidence = 'high' | 'low'
 
 export interface RecognitionResult {
-  name: string
+  card: TcgCard
   confidence: Confidence
-  rawText: string
+  rawText: string,
+  debugImage: string,
+  cleanedText: string
 }
 
-export interface NameMatch {
-  name: string
+export interface CardMatch {
+  brief: CardBrief
   score: number
 }

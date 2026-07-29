@@ -27,7 +27,7 @@ export const gameBoyMenuState = atom({
         'message',
         'gallery',
         'music',
-        'pokescan',
+        'home'
     ]
 })
 
@@ -77,8 +77,3 @@ export const gameBoyGalleryIndexState = atom({
     key: 'gameBoyGalleryIndex',
     default: 0
 })
-
-
-
-// export const 
-

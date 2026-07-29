@@ -1,4 +1,4 @@
-import type { NameMatch } from '../types'
+import type { CardBrief, CardMatch } from '../types'
 
 // TCG-specific tokens that ride along with the name in the name band but
 // aren't part of the species name itself. Stripped before matching.
@@ -16,8 +16,9 @@ const SYMBOL_MAP: Record<string, string> = {
 
 /**
  * Cleans raw OCR output from a card's name band into something matchable:
- * strips HP numbers, stray symbols, and TCG suffix words, but keeps gender
- * symbols since PokeAPI encodes those into the slug (nidoran-f / nidoran-m).
+ * strips HP numbers, stray symbols, and TCG suffix words. Kept deliberately
+ * light — TCGdex's own search already does fuzzy "contains" matching, so
+ * this just removes noise that would otherwise throw that search off.
  */
 export function cleanOcrText(raw: string): string {
   let text = raw
@@ -61,24 +62,21 @@ function similarity(a: string, b: string): number {
 }
 
 /**
- * Finds the closest PokéAPI name slug to the (cleaned) OCR text.
- * Tries the full cleaned string first, then each individual word — OCR
- * often drops or garbles one word in a multi-word read, so single-word
- * species names ("pikachu") still match even if noise words fail to strip.
+ * Picks the closest-matching card from a list of TCGdex search results.
+ * TCGdex's "contains" search already narrows candidates down (e.g. searching
+ * "pikachu" returns every printed Pikachu card), so this just ranks that
+ * shortlist by how closely each card's actual name matches the cleaned OCR
+ * text — which naturally favors "Pikachu" over "Pikachu VMAX" when the OCR
+ * read didn't pick up a suffix.
  */
-export function matchPokemonName(cleanedText: string, allNames: string[]): NameMatch | null {
-  if (!cleanedText) return null
+export function matchCard(cleanedText: string, candidates: CardBrief[]): CardMatch | null {
+  if (!cleanedText || candidates.length === 0) return null
 
-  const candidates = [cleanedText, ...cleanedText.split(' ')].filter((c) => c.length >= 3)
-
-  let best: NameMatch | null = null
-  for (const candidate of candidates) {
-    for (const name of allNames) {
-      const baseName = name.split('-')[0] // compare against base species for hyphenated slugs
-      const score = Math.max(similarity(candidate, name), similarity(candidate, baseName))
-      if (!best || score > best.score) {
-        best = { name, score }
-      }
+  let best: CardMatch | null = null
+  for (const brief of candidates) {
+    const score = similarity(cleanedText, brief.name.toLowerCase())
+    if (!best || score > best.score) {
+      best = { brief, score }
     }
   }
 

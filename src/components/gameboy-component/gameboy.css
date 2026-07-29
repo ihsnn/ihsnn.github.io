@@ -1,8 +1,14 @@
 @font-face {
   font-family: "Pixeboy-z8XGD";
-  src: local('Pixeboy-z8XGD'), url(./fonts/Pixeboy-z8XGD.ttf) format('opentype');
+  src: local('Pixeboy-z8XGD'), url(../../fonts/Pixeboy-z8XGD.ttf) format('opentype');
 }
 
+.dex-brand__title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  color: #f2f2f2;
+  letter-spacing: 0.5px;
+}
 .gameboy {
   position: relative;
   height: 1080px;

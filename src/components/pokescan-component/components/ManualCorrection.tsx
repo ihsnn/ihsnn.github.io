@@ -1,31 +1,59 @@
-import { useEffect, useState } from 'react'
-import { getAllPokemonNames } from '../services/pokeapi'
+import { useEffect, useRef, useState } from 'react'
+import { searchCardsByName, cardImageUrl } from '../services/tcgdex'
+import type { CardBrief } from '../types'
 
 interface ManualCorrectionProps {
-  onPick: (name: string) => void
+  onPick: (cardId: string) => void
   inline?: boolean
 }
 
 export default function ManualCorrection({ onPick, inline }: ManualCorrectionProps) {
   const [query, setQuery] = useState('')
-  const [allNames, setAllNames] = useState<string[]>([])
+  const [results, setResults] = useState<CardBrief[]>([])
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const requestIdRef = useRef(0)
 
   useEffect(() => {
-    getAllPokemonNames().then(setAllNames)
-  }, [])
+    if (debounceRef.current) clearTimeout(debounceRef.current)
 
-  const matches =
-    query.trim().length >= 2
-      ? allNames.filter((n) => n.includes(query.trim().toLowerCase())).slice(0, 6)
-      : []
+    const trimmed = query.trim()
+    if (trimmed.length < 2) {
+      setResults([])
+      setLoading(false)
+      return
+    }
+
+    setLoading(true)
+    const thisRequestId = ++requestIdRef.current
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const cards = await searchCardsByName(trimmed, 8)
+        if (requestIdRef.current === thisRequestId) {
+          setResults(cards)
+          setLoading(false)
+        }
+      } catch {
+        if (requestIdRef.current === thisRequestId) {
+          setResults([])
+          setLoading(false)
+        }
+      }
+    }, 350)
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [query])
 
   return (
-    <div style={{ marginTop: 10, position: 'relative' }}>
+    <div className='flex flex-col justify-center items-center' style={{ marginTop: 10, position: 'relative' }}>
       <input
         type="text"
         value={query}
-        placeholder={inline ? 'Not right? Search the correct name...' : 'Search Pokémon name...'}
+        placeholder={inline ? 'Not right? Search the card name...' : 'Search card name...'}
         onChange={(e) => {
           setQuery(e.target.value)
           setOpen(true)
@@ -42,49 +70,39 @@ export default function ManualCorrection({ onPick, inline }: ManualCorrectionPro
           outline: 'none',
         }}
       />
-      {open && matches.length > 0 && (
-        <ul
-          style={{
-            listStyle: 'none',
-            margin: '4px 0 0',
-            padding: 0,
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            background: '#fff',
-            borderRadius: 6,
-            boxShadow: '0 6px 16px rgba(0,0,0,0.25)',
-            overflow: 'hidden',
-            zIndex: 5,
-          }}
-        >
-          {matches.map((name) => (
-            <li key={name}>
-              <button
-                type="button"
-                onClick={() => {
-                  onPick(name)
-                  setQuery('')
-                  setOpen(false)
-                }}
-                style={{
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '8px 10px',
-                  border: 'none',
-                  background: 'transparent',
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 12,
-                  color: 'var(--ink)',
-                  textTransform: 'capitalize',
-                }}
-              >
-                {name.replace(/-/g, ' ')}
-              </button>
-            </li>
-          ))}
+      {open && (loading || results.length > 0) && (
+        <ul className="manual-correction-list py-5">
+          {loading && <li className="manual-correction-list__status text-white">Searching…</li>}
+          {!loading &&
+            results.map((card) => (
+              <li key={card.id}>
+                <button
+                  type="button"
+                  className="manual-correction-list__item"
+                  onClick={() => {
+                    onPick(card.id)
+                    setQuery('')
+                    setOpen(false)
+                    setResults([])
+                  }}
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 12,
+                    padding: '8px 10px',
+                    borderRadius: 6,
+                    color: inline ? 'var(--ink)' : '#fff',
+                    outline: 'none',
+                    margin:'10px 0'
+                  }}
+                >
+                  {card.image && (
+                    <img src={cardImageUrl(card.image, 'low', 'webp') ?? undefined} alt="" />
+                  )}
+                  <span className='text-white'>{card.name}</span>
+                  <span className='text-white'>{card.id}</span>
+                </button>
+              </li>
+            ))}
         </ul>
       )}
     </div>

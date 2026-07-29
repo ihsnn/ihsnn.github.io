@@ -10,7 +10,7 @@ export default function MenuScene() {
 
         menus.map((v:any, index:number)=> {
             array.push(
-                <div className={`relative ${index === indexSelected ? 'font-semibold' : ''}`}>
+                <div className={`relative ${index === indexSelected ? 'font-semibold' : ' -mt-1'}`}>
                     {index === indexSelected && (
                         <div className="absolute left-0 top-0 -ml-5">{'>'}</div>
                     )}
@@ -24,7 +24,7 @@ export default function MenuScene() {
     
     return (
         <div id="scroll" className='w-full flex justify-center items-center flex-col'>
-            <div style={{fontSize:'40pt', marginBottom:'20px'}}>MENU</div>
+            <div style={{fontSize:'45pt', lineHeight:'60pt'}}>MENU</div>
             <div className="w-full flex justify-center items-center flex-col" style={{fontSize:'20pt'}}>
                 {listMenu()}
             </div>
