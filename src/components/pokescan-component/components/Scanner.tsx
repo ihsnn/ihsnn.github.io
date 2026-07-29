@@ -1,3 +1,5 @@
+import { faCamera, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useRef, useState } from 'react'
 
 interface ScannerProps {
@@ -15,6 +17,8 @@ export default function Scanner({ onImageSelected, scanning, previewUrl, statusT
   const [dragActive, setDragActive] = useState(false)
   const [cameraActive, setCameraActive] = useState(false)
   const [cameraError, setCameraError] = useState<string | null>(null)
+  const [cameras, setCameras] = useState<MediaDeviceInfo[]>([])
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null)
 
   // Always release the camera when the component unmounts or the live
   // view is closed — otherwise the browser keeps showing the "camera in
@@ -29,7 +33,19 @@ export default function Scanner({ onImageSelected, scanning, previewUrl, statusT
     setCameraActive(false)
   }
 
-  async function startCamera() {
+  // Device labels (and often the full device list) are only populated by
+  // the browser once camera permission has been granted at least once —
+  // so this is called after a stream has already started successfully.
+  async function loadCameras() {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices()
+      setCameras(devices.filter((d) => d.kind === 'videoinput'))
+    } catch (err) {
+      console.error('Could not list cameras', err)
+    }
+  }
+
+  async function startCamera(deviceId?: string) {
     setCameraError(null)
 
     // Check this first: on mobile browsers especially, an insecure context
@@ -45,19 +61,26 @@ export default function Scanner({ onImageSelected, scanning, previewUrl, statusT
       return
     }
 
-    // Try the preferred back-camera + resolution first. Some devices/browsers
-    // reject that specific combination (OverconstrainedError) even though a
-    // camera is available, so we fall back to a bare request before giving up.
+    // If a specific camera was picked, request exactly that device. Otherwise
+    // (first launch) just ask for a rear-facing camera and let the OS decide
+    // — usually the main wide lens — which the picker can then override.
+    const primaryConstraints: MediaStreamConstraints = {
+      video: deviceId
+        ? { deviceId: { exact: deviceId }, width: { ideal: 1280 }, height: { ideal: 960 } }
+        : { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 960 } },
+      audio: false,
+    }
+
     let stream: MediaStream | null = null
     let lastError: unknown = null
 
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 960 } },
-        audio: false,
-      })
+      stream = await navigator.mediaDevices.getUserMedia(primaryConstraints)
     } catch (err) {
       lastError = err
+      // Some devices/browsers reject the specific constraint combo
+      // (OverconstrainedError) even though a camera is available — fall
+      // back to a bare request before giving up.
       try {
         stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
       } catch (fallbackErr) {
@@ -77,7 +100,7 @@ export default function Scanner({ onImageSelected, scanning, previewUrl, statusT
       } else if (name === 'NotReadableError' || name === 'TrackStartError') {
         setCameraError('The camera is already in use by another app or tab. Close it and try again.')
       } else if (name === 'OverconstrainedError' || name === 'ConstraintNotSatisfiedError') {
-        setCameraError('No camera on this device matches the required settings. Use Upload instead.')
+        setCameraError('That camera is not available. Try picking a different one, or use Upload.')
       } else if (name === 'SecurityError') {
         setCameraError('Camera access is blocked by this page/browser\'s security settings. Use Upload instead.')
       } else {
@@ -92,6 +115,19 @@ export default function Scanner({ onImageSelected, scanning, previewUrl, statusT
     requestAnimationFrame(() => {
       if (videoRef.current) videoRef.current.srcObject = stream
     })
+
+    // Track which physical device actually ended up streaming (so the
+    // dropdown reflects reality even on the very first, unconstrained launch),
+    // then populate the full camera list now that permission is granted.
+    const actualDeviceId = stream.getVideoTracks()[0]?.getSettings().deviceId
+    if (actualDeviceId) setSelectedDeviceId(actualDeviceId)
+    loadCameras()
+  }
+
+  async function handleSelectCamera(deviceId: string) {
+    setSelectedDeviceId(deviceId)
+    stopCamera()
+    await startCamera(deviceId)
   }
 
   function capturePhoto() {
@@ -175,18 +211,37 @@ export default function Scanner({ onImageSelected, scanning, previewUrl, statusT
 
       {cameraError && <div className="dex-error">⚠ {cameraError}</div>}
 
+      {showingLiveCamera && cameras.length > 1 && (
+        <select
+          className="camera-select"
+          value={selectedDeviceId ?? ''}
+          onChange={(e) => handleSelectCamera(e.target.value)}
+        >
+          {cameras.map((camera, i) => (
+            <option key={camera.deviceId} value={camera.deviceId}>
+              {camera.label || `Camera ${i + 1}`}
+            </option>
+          ))}
+        </select>
+      )}
+
       {showingLiveCamera ? (
         <div className="dex-controls">
           <button type="button" className="dex-btn dex-btn--ghost" onClick={stopCamera}>
-            ✕ Cancel
+            <FontAwesomeIcon icon={faTimes}/> Cancel
           </button>
           <button type="button" className="dex-btn dex-btn--primary" onClick={capturePhoto}>
-            ● Capture
+            <FontAwesomeIcon icon={faCamera}/> Capture
           </button>
         </div>
       ) : (
         <div className="dex-controls">
-          <button type="button" className="dex-btn dex-btn--ghost" disabled={scanning} onClick={startCamera}>
+          <button
+            type="button"
+            className="dex-btn dex-btn--ghost"
+            disabled={scanning}
+            onClick={() => startCamera(selectedDeviceId ?? undefined)}
+          >
             Camera
           </button>
           <button

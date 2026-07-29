@@ -1,5 +1,5 @@
 import { useRecoilState, useRecoilValue } from 'recoil'
-import '../../gameboy.css'
+import './gameboy.css'
 import { gameBoyGalleryIndexState, gameBoyMenuIndexState, gameBoyMenuState, gameBoyMessageIndexState, gameBoyMessageState, gameBoyMusicIndexState, gameBoyMusicState, openEnvelopeState, powerOnState } from '../../Atom'
 import GameboyScreen from './GameboyScreen'
 import { scrollDown, scrollToBottom, scrollToTop, scrollUp } from '../../Helper'
@@ -9,6 +9,9 @@ import beep from '../../assets/sounds/beep.wav'
 import boop from '../../assets/sounds/boop.wav'
 // import whoop from '../../assets/sounds/whoop.wav'
 import { useRef } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowDown, faHome } from '@fortawesome/free-solid-svg-icons'
+import React from 'react'
 
 export default function GameboyMain() {
     const location = useLocation()
@@ -62,6 +65,8 @@ export default function GameboyMain() {
                     // it's a full standalone page, not a scene inside the screen.
                     if (selected === 'pokescan') {
                         navigate('/pokescan')
+                    } else if (selected === 'home') {
+                        navigate('/')
                     } else {
                         navigate('/gameboy/' + selected)
                     }
@@ -215,112 +220,128 @@ export default function GameboyMain() {
     }
 
     return (
-        <div ref={audioRef} className={`gameboy ${powerOn ? 'power-on' : ''}`} style={{scale:'0.7'}}>
-            <div className="front-plate">
-            <div className="front-plate-head">
-                <div className="vertical-stripe"></div>
-                <div className="vertical-stripe"></div>
-                <div className="vertical-stripe"></div>
-        
-                <div className="vertical-gouge vertical-gouge-1"></div>
-                <div className="vertical-gouge vertical-gouge-2"></div>
-        
-                <div className="on-off">
-                    <div className="spike spike-left"><div></div></div>
-                    <div className="spike spike-right"><div></div></div>
-                    <span>
-                        OFF
-                        <i></i>
-                        ON
-                    </span>
-                </div>
-            </div>
-        
-            <div className="screen-container">
-                <div className="screen-headline">
-                <span>DOT MATRIX WITH STEREO SOUND</span>
-                </div>
-        
-                <div className="battery-light">
-                <span>BATTERY</span>
-                </div>
-        
-                <div className="screen">
-                    <GameboyScreen/>
-                </div>
-            </div>
-        
-            <div className="logo"></div>
-        
-            <div id="controller">
-        
-                <div className="buttons-a-b">
-                <div className="button-b button-key-j" id="controller_b" onClick={()=>onClickButton('controller_b')}></div>
-        
-                <div className="button-a button-key-k" id="controller_a" onClick={()=>onClickButton('controller_a')}></div> 
-                </div>
+        <div ref={audioRef} className={`gameboy ${powerOn ? 'power-on' : ''} relative`} style={{scale:'0.7'}}>
+            {!powerOn && (
+                <React.Fragment>
+                    <div className='dex-brand__title text-white absolute top-0 left-0 flex flex-col justify-center items-center gap-1.5 animate-bounce' style={{marginTop:'-60px', marginLeft:'10px'}}>
+                        <div>
+                            Turn On Here
+                        </div>
+                        <FontAwesomeIcon icon={faArrowDown} className='font-bold'/>
+                    </div>
+                    <div className='dex-brand__title text-white absolute top-0 right-0 flex justify-center items-center gap-3 text-xl cursor-pointer' style={{marginTop:'-60px', marginRight:'10px'}} onClick={() => navigate('/')}>
+                        <FontAwesomeIcon icon={faHome} className='font-bold mb-1'/>
+                        <div>
+                            Home
+                        </div>
+                    </div>
+                </React.Fragment>
                 
-                <div className="start button-key-m" id="controller_start" onClick={()=>onClickButton('controller_start')}><div></div></div>
-        
-                <div className="select button-key-n" id="controller_select" onClick={()=>onClickButton('controller_select')}><div></div></div>
-        
-                <div className="cross-container">
-                <div className="spike"><div></div></div>
-                <div className="spike"><div></div></div>
-                <div className="spike"><div></div></div>
-                <div className="spike"><div></div></div>
-        
-                <div className="cross" id="controller_dpad">
-                    <div className="top-down">
-                    <div className="button-top button-key-w" id="controller_up" onClick={()=>onClickButton('controller_up')}>
-                        <div className="button-stripe"></div>
-                        <div className="button-stripe"></div>
-                        <div className="button-stripe"></div>
+            )} 
+            <div className="front-plate">
+                <div className="front-plate-head">
+                    <div className="vertical-stripe"></div>
+                    <div className="vertical-stripe"></div>
+                    <div className="vertical-stripe"></div>
+            
+                    <div className="vertical-gouge vertical-gouge-1"></div>
+                    <div className="vertical-gouge vertical-gouge-2"></div>
+            
+                    <div className="on-off">
+                        <div className="spike spike-left"><div></div></div>
+                        <div className="spike spike-right"><div></div></div>
+                        <span>
+                            OFF
+                            <i></i>
+                            ON
+                        </span>
                     </div>
-                    <div className="button-bottom button-key-s" id="controller_down" onClick={()=>onClickButton('controller_down')}>
-                        <div className="button-stripe"></div>
-                        <div className="button-stripe"></div>
-                        <div className="button-stripe"></div>
-                    </div>
-                    </div>
-        
-                    <div className="left-right">
-                    <div className="button-left button-key-a" id="controller_left" onClick={()=>onClickButton('controller_left')}>
-                        <div className="button-stripe"></div>
-                        <div className="button-stripe"></div>
-                        <div className="button-stripe"></div>
-                    </div>
-                    <div className="button-right button-key-d" id="controller_right" onClick={()=>onClickButton('controller_right')}>
-                        <div className="button-stripe"></div>
-                        <div className="button-stripe"></div>
-                        <div className="button-stripe"></div>
-                    </div>
-                    </div>
-                    <div className="cross-middle-bumb"></div>
                 </div>
+            
+                <div className="screen-container">
+                    <div className="screen-headline">
+                    <span>DOT MATRIX WITH STEREO SOUND</span>
+                    </div>
+            
+                    <div className="battery-light">
+                    <span>BATTERY</span>
+                    </div>
+            
+                    <div className="screen">
+                        <GameboyScreen/>
+                    </div>
+                </div>
+            
+                <div className="logo"></div>
+            
+                <div id="controller">
+            
+                    <div className="buttons-a-b">
+                    <div className="button-b button-key-j" id="controller_b" onClick={()=>onClickButton('controller_b')}></div>
+            
+                    <div className="button-a button-key-k" id="controller_a" onClick={()=>onClickButton('controller_a')}></div> 
+                    </div>
+                    
+                    <div className="start button-key-m" id="controller_start" onClick={()=>onClickButton('controller_start')}><div></div></div>
+            
+                    <div className="select button-key-n" id="controller_select" onClick={()=>onClickButton('controller_select')}><div></div></div>
+            
+                    <div className="cross-container">
+                    <div className="spike"><div></div></div>
+                    <div className="spike"><div></div></div>
+                    <div className="spike"><div></div></div>
+                    <div className="spike"><div></div></div>
+            
+                    <div className="cross" id="controller_dpad">
+                        <div className="top-down">
+                        <div className="button-top button-key-w" id="controller_up" onClick={()=>onClickButton('controller_up')}>
+                            <div className="button-stripe"></div>
+                            <div className="button-stripe"></div>
+                            <div className="button-stripe"></div>
+                        </div>
+                        <div className="button-bottom button-key-s" id="controller_down" onClick={()=>onClickButton('controller_down')}>
+                            <div className="button-stripe"></div>
+                            <div className="button-stripe"></div>
+                            <div className="button-stripe"></div>
+                        </div>
+                        </div>
+            
+                        <div className="left-right">
+                        <div className="button-left button-key-a" id="controller_left" onClick={()=>onClickButton('controller_left')}>
+                            <div className="button-stripe"></div>
+                            <div className="button-stripe"></div>
+                            <div className="button-stripe"></div>
+                        </div>
+                        <div className="button-right button-key-d" id="controller_right" onClick={()=>onClickButton('controller_right')}>
+                            <div className="button-stripe"></div>
+                            <div className="button-stripe"></div>
+                            <div className="button-stripe"></div>
+                        </div>
+                        </div>
+                        <div className="cross-middle-bumb"></div>
+                    </div>
+                    </div>
+            
+                </div>
+            
+                <div className="speaker">
+                    <div><div className="speaker-inner-shadow"></div></div>
+                    <div><div className="speaker-inner-shadow"></div></div>
+                    <div><div className="speaker-inner-shadow"></div></div>
+                    <div><div className="speaker-inner-shadow"></div></div>
+                    <div><div className="speaker-inner-shadow"></div></div>
+                    <div><div className="speaker-inner-shadow"></div></div>
+                </div>
+            
+                <div className="phones" id="volume-switch">
+                    <div className="vertical-stripe"></div>
+                    <div className="vertical-stripe"></div>
+                    <div className="vertical-stripe"></div> 
+                    <i></i>
+                    <span>PHONES</span>
                 </div>
         
             </div>
-        
-            <div className="speaker">
-                <div><div className="speaker-inner-shadow"></div></div>
-                <div><div className="speaker-inner-shadow"></div></div>
-                <div><div className="speaker-inner-shadow"></div></div>
-                <div><div className="speaker-inner-shadow"></div></div>
-                <div><div className="speaker-inner-shadow"></div></div>
-                <div><div className="speaker-inner-shadow"></div></div>
-            </div>
-        
-            <div className="phones" id="volume-switch">
-                <div className="vertical-stripe"></div>
-                <div className="vertical-stripe"></div>
-                <div className="vertical-stripe"></div> 
-                <i></i>
-                <span>PHONES</span>
-            </div>
-        
-            </div>
-        
             <div className="power-button" onClick={()=> setPowerOn(!powerOn)}><div></div></div>
         </div>
     )
