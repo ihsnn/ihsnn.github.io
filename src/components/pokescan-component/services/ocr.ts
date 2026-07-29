@@ -43,7 +43,7 @@ async function cropNameBand(imageFile: File): Promise<string> {
   const sw = img.width * (xEnd - xStart)
   const sh = img.height * (yEnd - yStart)
 
-  const SCALE = 6
+  const SCALE = 20
   const canvas = document.createElement('canvas')
   canvas.width = sw * SCALE
   canvas.height = sh * SCALE
