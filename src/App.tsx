@@ -1,17 +1,20 @@
 import { RecoilRoot } from 'recoil'
 import { BrowserRouter } from 'react-router-dom'
-import './App.css'
-import Routing from './Routing'
+import AppErrorBoundary from './app/AppErrorBoundary'
+import AppRouter from './app/AppRouter'
 
-function App() {
-
+/**
+ * Composition root only — providers live here, nothing else.
+ * Routes (and every screen) are defined in `src/app/AppRouter.tsx`.
+ */
+export default function App() {
   return (
-    <RecoilRoot>
-      <BrowserRouter>
-        <Routing/>
-      </BrowserRouter>
-    </RecoilRoot>
+    <AppErrorBoundary>
+      <RecoilRoot>
+        <BrowserRouter>
+          <AppRouter />
+        </BrowserRouter>
+      </RecoilRoot>
+    </AppErrorBoundary>
   )
 }
-
-export default App

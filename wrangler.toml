@@ -3,3 +3,7 @@ compatibility_date = "2026-07-29"
 
 [assets]
 directory = "./dist"
+# React Router uses real URLs (/gameboy/menu, /pokescan), so unknown paths must
+# be answered with index.html instead of a 404. This is the only SPA fallback in
+# the project - there is no _redirects file to keep in sync.
+not_found_handling = "single-page-application"

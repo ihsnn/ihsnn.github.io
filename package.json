@@ -2,7 +2,7 @@
   "name": "ihsnn",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://ihsnn.gihub.io",
+  "homepage": "https://ihsnn.github.io",
   "type": "module",
   "scripts": {
     "predeploy": "npm run build",
@@ -11,7 +11,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "pages:dev": "npm run build && wrangler pages dev dist",
+    "deploy:cf": "npm run build && wrangler versions upload",
     "pages:deploy": "npm run build && wrangler pages deploy dist"
   },
   "dependencies": {
@@ -25,7 +25,6 @@
     "@mui/material": "^6.1.4",
     "@mui/x-data-grid": "^7.21.0",
     "axios": "^1.7.7",
-    "hono": "^4.12.32",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
