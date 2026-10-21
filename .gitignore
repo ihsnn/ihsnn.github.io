@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Local env overrides (VITE_ASSET_BASE_URL, etc.)
+.env
+.env.local
+.env.*.local
+
+# Vite / Wrangler caches
+.vite
+.wrangler
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

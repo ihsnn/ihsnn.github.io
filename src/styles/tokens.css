@@ -1,0 +1,50 @@
+/* ==========================================================================
+   Design tokens
+   One palette + type scale for the whole site. Page-level CSS (landing,
+   pokescan, gameboy) still owns its own device colours, but anything shared —
+   fonts, the "case"/paper neutrals, the LED accent, focus ring — lives here.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Pixeboy';
+  /* .ttf must be declared as truetype; `opentype` is refused by some browsers. */
+  src: url('../assets/fonts/Pixeboy-z8XGD.ttf') format('truetype');
+  font-display: swap;
+}
+
+:root {
+  /* Type */
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-pixel: 'Press Start 2P', 'Pixeboy', ui-monospace, monospace;
+  --font-gb: 'Pixeboy', 'Press Start 2P', ui-monospace, monospace;
+
+  /* Hardware neutrals (shared by the shelf and the console) */
+  --case: #1a1a1f;
+  --case-light: #232329;
+  --case-line: rgba(255, 255, 255, 0.1);
+  --paper: #eae6da;
+  --paper-dim: #a9a598;
+  --paper-faint: #6f6c63;
+
+  /* Accents */
+  --led: #5ee6c8;
+  --led-dim: #2b7a6c;
+  --dex-yellow: #ffcb05;
+  --danger: #ff5a4e;
+
+  /* Shape + depth, reused so new pages look like the same website */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --shadow-raise: 0 10px 24px rgba(0, 0, 0, 0.4);
+  --shadow-float: 0 16px 32px rgba(0, 0, 0, 0.5);
+
+  /* Layout */
+  --shell-max: 760px;
+  --gutter: clamp(16px, 4vw, 32px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  color-scheme: dark;
+}

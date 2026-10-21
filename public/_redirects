@@ -1,0 +1,8 @@
+# SPA fallback for Cloudflare Pages.
+#
+# React Router uses real URLs (/gameboy/menu, /pokescan), so a hard refresh or
+# a shared deep link must be answered with index.html instead of a 404.
+# Cloudflare Pages Functions (/api/*) are matched before these rules and are
+# not affected.
+/*
+  /index.html  200
