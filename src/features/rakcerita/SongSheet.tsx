@@ -52,7 +52,7 @@ export default function SongSheet({ open, soundOn, onClose }: SongSheetProps) {
     setProgress(0)
     void song.start()
     return () => {
-      song?.destroy()
+      song?.stop()
       songRef.current = null
     }
   }, [open])

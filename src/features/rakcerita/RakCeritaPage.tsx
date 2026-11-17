@@ -807,7 +807,8 @@ export default function RakCeritaPage() {
         {toastMessage}
       </div>
       <canvas id="fx" ref={fxRef} aria-hidden="true" />
-      <div id="ytHost" aria-hidden="true" />
+      {/* hidden YouTube player: the song sheet borrows its sound, never the video */}
+      <div id="rak-yt" aria-hidden="true" />
 
       {/* keeps the cartridge title reachable for screen readers */}
       <p className="sr-only">{GAME.title}</p>

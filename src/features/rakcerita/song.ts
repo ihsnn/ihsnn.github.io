@@ -144,6 +144,76 @@ function loadApi(): Promise<void> {
  * Owns exactly one play-through of the song and the state the sheet renders.
  * `start()` is safe to call twice; `stop()` is idempotent.
  */
+/**
+ * One hidden player for the whole cartridge. It lives at `#rak-yt` (a 1 px
+ * off-screen box), so the video never shows but its sound is usable.
+ */
+let songPlayer: YouTubePlayer | null = null
+let songPlayerPromise: Promise<YouTubePlayer> | null = null
+
+function ensureSongPlayer(): Promise<YouTubePlayer> {
+  if (songPlayer) return Promise.resolve(songPlayer)
+  if (songPlayerPromise) return songPlayerPromise
+  songPlayerPromise = loadApi()
+    .then(
+      () =>
+        new Promise<YouTubePlayer>((resolve, reject) => {
+          const w = window as unknown as YouTubeHost
+          const host = document.getElementById('rak-yt')
+          if (!host || !w.YT?.Player) {
+            reject(new Error('no-host'))
+            return
+          }
+          host.innerHTML = '<div id="rak-yt-frame"></div>'
+          const timer = window.setTimeout(() => reject(new Error('player-timeout')), 12000)
+          songPlayer = new w.YT.Player('rak-yt-frame', {
+            width: 320,
+            height: 180,
+            videoId: SONG_COPY.videoId,
+            playerVars: {
+              autoplay: 0,
+              controls: 0,
+              disablekb: 1,
+              fs: 0,
+              playsinline: 1,
+              rel: 0,
+              modestbranding: 1,
+            },
+            events: {
+              onReady: (event: { target: YouTubePlayer }) => {
+                window.clearTimeout(timer)
+                try {
+                  event.target.setVolume(80)
+                } catch {
+                  /* volume is cosmetic */
+                }
+                resolve(event.target)
+              },
+              onError: () => {
+                window.clearTimeout(timer)
+                reject(new Error('yt-error'))
+              },
+            },
+          })
+        }),
+    )
+    .catch((error: unknown) => {
+      songPlayerPromise = null
+      songPlayer = null
+      throw error
+    })
+  return songPlayerPromise
+}
+
+/**
+ * Builds the player while the page is on screen, so the tap that starts the
+ * song still counts as a user gesture when `playVideo()` finally runs.
+ */
+export function prewarmSong() {
+  if (window.location.protocol === 'file:') return
+  ensureSongPlayer().catch(() => {})
+}
+
 export class VowelSong {
   private player: YouTubePlayer | null = null
   private timers: number[] = []
@@ -186,6 +256,7 @@ export class VowelSong {
     try {
       const player = await this.ensurePlayer()
       if (this.stopped) return
+      this.player = player
       player.seekTo(0, true)
       player.setVolume(80)
       player.unMute()
@@ -217,6 +288,10 @@ export class VowelSong {
     }
   }
 
+  /**
+   * Stops playback without touching the shared player: the next tap reuses it
+   * (and therefore keeps the user gesture that browsers demand for audio).
+   */
   stop() {
     this.stopped = true
     this.stopTimers()
@@ -226,17 +301,6 @@ export class VowelSong {
     } catch {
       /* the player may already be gone */
     }
-  }
-
-  /** Stops and drops the hidden player (the modal is being unmounted). */
-  destroy() {
-    this.stop()
-    try {
-      this.player?.destroy()
-    } catch {
-      /* nothing to destroy */
-    }
-    this.player = null
   }
 
   private stopTimers() {
@@ -250,49 +314,7 @@ export class VowelSong {
   }
 
   private ensurePlayer(): Promise<YouTubePlayer> {
-    if (this.player) return Promise.resolve(this.player)
-    return loadApi().then(
-      () =>
-        new Promise<YouTubePlayer>((resolve, reject) => {
-          const w = window as unknown as YouTubeHost
-          const host = document.getElementById('rak-yt')
-          if (!host || !w.YT?.Player) {
-            reject(new Error('no-host'))
-            return
-          }
-          host.innerHTML = '<div id="rak-yt-frame"></div>'
-          const timer = window.setTimeout(() => reject(new Error('player-timeout')), 12000)
-          this.player = new w.YT.Player('rak-yt-frame', {
-            width: 320,
-            height: 180,
-            videoId: SONG_COPY.videoId,
-            playerVars: {
-              autoplay: 0,
-              controls: 0,
-              disablekb: 1,
-              fs: 0,
-              playsinline: 1,
-              rel: 0,
-              modestbranding: 1,
-            },
-            events: {
-              onReady: (event: { target: YouTubePlayer }) => {
-                window.clearTimeout(timer)
-                try {
-                  event.target.setVolume(80)
-                } catch {
-                  /* volume is cosmetic */
-                }
-                resolve(event.target)
-              },
-              onError: () => {
-                window.clearTimeout(timer)
-                reject(new Error('yt-error'))
-              },
-            },
-          })
-        }),
-    )
+    return ensureSongPlayer()
   }
 
   /** Silent sheet: the animation still runs so the page feels alive. */

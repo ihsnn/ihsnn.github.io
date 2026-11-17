@@ -36,7 +36,7 @@ import {
   tone,
   type ActTarget,
 } from '../runtime'
-import { VOWEL_FREQUENCIES, VOWELS } from '../song'
+import { VOWEL_FREQUENCIES, VOWELS, prewarmSong } from '../song'
 import type { Story } from '../types'
 
 function singVowel(el: ActTarget, i: number) {
@@ -174,7 +174,7 @@ export const gigi: Story = {
     {
       t: 'Nyanyi AIUEO',
       n: 'Sambil sikat gigi, mereka nyanyi lagu AIUEO. A, I, U, E, O!',
-      hint: 'Ketuk A I U E O · Lagu: Mengenal Huruf AIUEO — BabyZu',
+      hint: 'Ketuk A I U E O · Ketuk tulisan lagu untuk memutar suaranya',
       art: () => scene(`
         ${bathBg()}
         ${AD('mama', { mood: 'laugh', brush: true, brushColor: '#F05A8A' }, 560, 414, 0.86, 'bob')}
@@ -186,11 +186,11 @@ export const gigi: Story = {
         ${SB('v-u', 430, 64, 100, 96, 'U', 'vowl')}
         ${SB('v-e', 590, 64, 100, 96, 'E', 'vowl')}
         ${SB('v-o', 750, 64, 100, 96, 'O', 'vowl')}
-        ${SB('play-song', 640, 356, 290, 52, '<span class="songbtn-in">♪ Putar lagu AIUEO</span>', 'songbtn')}
-        ${HTMLX('<a class="song-credit" href="https://youtu.be/xLGiR59fD2k" target="_blank" rel="noopener">♪ Mengenal Huruf AIUEO — BabyZu</a>')}
+        ${HTMLX('<button class="song-credit song-credit--play" type="button" data-act="mengenal">♪ Mengenal Huruf AIUEO — BabyZu</button>')}
       `),
+      setup: prewarmSong,
       acts: {
-        'play-song': () => openSong(),
+        mengenal: () => openSong(),
         'v-a': (el) => singVowel(el, 0),
         'v-i': (el) => singVowel(el, 1),
         'v-u': (el) => singVowel(el, 2),
