@@ -124,10 +124,11 @@ The app uses real URLs (BrowserRouter), so the host must fall back to
 `index.html` for unknown paths:
 
 - **Cloudflare** — `npm run deploy:cf`, or the Git integration (build `npm run build`,
-  deploy `wrangler versions upload`). Deep links work through
+  deploy `wrangler deploy`). Deep links work through
   `not_found_handling = "single-page-application"` in [`wrangler.toml`](wrangler.toml);
-  there is no `_redirects` file to keep in sync. `npm run pages:deploy` is the static
-  Pages alternative.
+  there is no `_redirects` file to keep in sync. Cache and security headers come from
+  [`public/_headers`](public/_headers). `npm run pages:deploy` is the static Pages
+  alternative.
 - **GitHub Pages** — `npm run deploy` pushes only `dist/`, and there is no
   SPA fallback there. The `gh-pages` branch must not be the branch holding the
   source; prefer Cloudflare.

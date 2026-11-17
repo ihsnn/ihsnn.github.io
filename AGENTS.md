@@ -15,7 +15,7 @@ npm run build       # tsc -b && vite build  ->  dist/
 npm run preview     # serve the built dist/
 npm run lint        # eslint (flat config) — currently clean (0 errors, 0 warnings)
 npm run deploy      # gh-pages -d dist   <- see Deploy, this is dangerous here
-npm run deploy:cf   # build + wrangler versions upload (what the Cloudflare build runs)
+npm run deploy:cf   # build + wrangler deploy (what the Cloudflare build runs)
 npm run pages:deploy  # build + wrangler pages deploy dist (static Pages alternative)
 ```
 
@@ -208,9 +208,18 @@ tree on the remote with build output. That is why the root `assets/` and `images
 folders exist: leftovers from a past deploy.
 
 Preferred path is Cloudflare: `wrangler.toml`, Worker `ihsnn-playground`, Workers static
-assets. The GitHub integration runs `npm run build` then `wrangler versions upload`;
+assets. The GitHub integration runs `npm run build` then `wrangler deploy`;
 `npm run deploy:cf` does the same locally. `npm run pages:deploy` is the static Pages
 alternative.
+
+The deploy command must be `wrangler deploy`, not `wrangler versions upload`: the latter
+only uploads a version, and production keeps serving the previous deployment until
+someone promotes it. That is the "build green, site unchanged" failure mode.
+
+Cache and security headers live in `public/_headers` (Vite copies it to `dist/_headers`
+and Workers reads it there): hashed `/assets/*` is cached for a year, `/images/*` for a
+day, HTML always revalidates. Keep each rule on a single line — this is the same class of
+mistake as the wrapped `_redirects` rule that broke two deploys.
 
 The SPA fallback is **config only** — `[assets] not_found_handling =
 "single-page-application"` in `wrangler.toml`. There is deliberately no `_redirects`
