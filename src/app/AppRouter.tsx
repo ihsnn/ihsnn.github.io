@@ -12,6 +12,9 @@ import { LEGACY_REDIRECTS, ROUTES } from './routes'
  */
 const GameboyPage = lazy(() => import('../features/gameboy/GameboyPage'))
 const PokeScanPage = lazy(() => import('../features/pokescan/PokeScanPage'))
+const ArcadePage = lazy(() => import('../features/arcade/ArcadePage'))
+const KeluargaPage = lazy(() => import('../features/keluarga/KeluargaPage'))
+const RakCeritaPage = lazy(() => import('../features/rakcerita/RakCeritaPage'))
 
 function RouteFallback() {
   return (
@@ -34,6 +37,33 @@ export default function AppRouter() {
           element={
             <Suspense fallback={<RouteFallback />}>
               <PokeScanPage />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path={ROUTES.arcade}
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <ArcadePage />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path={ROUTES.keluarga}
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <KeluargaPage />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path={ROUTES.rakcerita}
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <RakCeritaPage />
             </Suspense>
           }
         />

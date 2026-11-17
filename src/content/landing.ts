@@ -4,7 +4,7 @@ import { ROUTES } from '../app/routes'
  * Landing page copy.
  *
  * Kept as data so the cover can be re-worded without touching layout, and so
- * every number ("02 cartridges") is derived from the cartridge registry.
+ * every number ("04 cartridges") is derived from the cartridge registry.
  */
 
 export interface HeroCta {
@@ -30,7 +30,7 @@ export const HERO: HeroCopy = {
   titleTop: 'Nostalgic hardware,',
   titleBottom: 'rebuilt in the',
   titleChip: 'browser',
-  lede: 'A shelf of small, playful interfaces — old machines rebuilt with real CSS, real audio and far too much attention to a 1989 plastic shell. Pick a cartridge and boot it up; everything runs in your browser.',
+  lede: 'A shelf of small, playful interfaces — old machines, one loud arcade cabinet and one small family story, rebuilt with real CSS, real audio and far too much attention to a 1989 plastic shell. Pick a cartridge and boot it up; everything runs in your browser.',
   ctas: [
     { label: 'Boot the console', route: ROUTES.gameboy, primary: true },
     { label: 'Scan a card', route: ROUTES.pokescan },
@@ -78,3 +78,21 @@ export const FIELD_NOTES: FieldNote[] = [
 
 /** Extra words woven into the scrolling strip under the shelf. */
 export const MARQUEE_WORDS = ['more soon', 'sound on', 'pixels', 'no backend']
+
+/**
+ * What is moulded into the plastic and printed on the sticker of every
+ * cartridge on the shelf. Project-specific copy lives in `content/projects.ts`.
+ */
+export const SHELF = {
+  /** Embossed on the shell's logo plate. */
+  logo: 'IHSNN',
+  logoSub: 'GAMES',
+  /** Printed up the right side of the label. */
+  sideOut: 'THIS SIDE OUT',
+  /** Small print above the title on the sticker. */
+  labelKicker: 'IHSNN ORIGINAL',
+  /** Sticker footer, next to the copyright year. */
+  labelMark: '8-BIT',
+  /** Caption link at the bottom of each card. */
+  cta: 'Insert cartridge',
+}

@@ -7,6 +7,12 @@
 export const ROUTES = {
   home: '/',
   pokescan: '/pokescan',
+  /** Upright arcade cabinet with a playable brick-buster. */
+  arcade: '/arcade',
+  /** GBC-style family story. */
+  keluarga: '/keluarga',
+  /** Shelf of tappable picture books (four stories on one cartridge). */
+  rakcerita: '/rakcerita',
   /** Boot screen of the console; every other scene hangs off it. */
   gameboy: '/gameboy',
 } as const
