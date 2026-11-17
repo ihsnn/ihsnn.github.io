@@ -1,0 +1,19 @@
+# Static-asset headers for Cloudflare Workers (wrangler.toml, [assets]).
+# Vite copies this file to dist/_headers; Cloudflare reads it from there.
+# Keep each rule on one line - a wrapped rule fails the deploy.
+
+# Hashed build output (index-C5PIUXqb.js, GameboyPage-*.css, ...) never changes
+# for a given name, so it can be cached forever.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Unhashed public images: a day of caching is plenty, and a stale icon is cheap.
+/images/*
+  Cache-Control: public, max-age=86400
+
+# Everything else (HTML, the SPA fallback) revalidates so a deploy is visible
+# immediately. PokéScan needs the camera, so it stays allowed for this origin.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(self), microphone=(), geolocation=()
