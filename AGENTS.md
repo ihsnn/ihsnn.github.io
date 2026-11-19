@@ -25,16 +25,20 @@ npm run pages:deploy  # build + wrangler pages deploy dist (static Pages alterna
 src/main.tsx                 React root; imports Tailwind, then tokens.css, then base.css
 src/App.tsx                  providers only: ErrorBoundary > RecoilRoot > BrowserRouter
 src/app/routes.ts            ROUTES, GAMEBOY_SCENES/SCENE_PATHS, scene-from-path, legacy redirects
-src/app/AppRouter.tsx        route table; lazy-loads the console, PokéScan, arcade + story, 404, ScrollToTop
+src/app/AppRouter.tsx        route table; lazy-loads every cartridge, 404, ScrollToTop
 src/app/AppErrorBoundary.tsx render-crash fallback
 src/content/projects.ts      cartridge registry (landing shelf + routes)
-src/content/landing.ts       cover copy: headline, CTAs, boot log, field notes, marquee words
+src/content/landing.ts       cover copy: headline, shelf actions, boot log, field notes,
+                             marquee words
 src/content/gameboy.ts       all console copy: menu rows, letters, songs, gallery, scene titles
 src/content/arcade.ts        arcade copy, controls, scoring rows, stage names + wall patterns
 src/content/keluarga.ts      family-story copy, appearance options, room-object lines,
                              three final thoughts
 src/content/rakcerita.ts     picture-book copy: shelf chrome, reader buttons, sheets,
                              help rows, song card
+src/content/photobooth.ts    strip catalogue + booth copy + per-layout sound recipes
+src/content/piara.ts         pocket-pet copy: actions, moods, stages, naming sheet
+src/content/warkop.ts        warkop menu catalogue + page copy + rupiah helpers
 src/state/gameboy.ts         Recoil atoms (power, indices, envelope) — user state only
 src/lib/assets.ts            media registry + `remote()` seam for future CDN hosting
 src/lib/scroll.ts            scroll helpers that take an element (no #scroll lookups)
@@ -45,7 +49,7 @@ src/styles/tokens.css        design tokens + the Pixeboy @font-face
 src/styles/base.css          document defaults, scrollbars, focus ring, .sr-only
 src/components/shared/       SiteHeader, NotFoundPage, ScrollToTop, shared.css
 src/features/landing/        LandingPage, LandingNav, Hero, HeroTerminal, Cartridge,
-                             Marquee, landing.css
+                             CartridgeArt, Marquee, landing.css
 src/features/gameboy/        GameboyPage, GameboyChassis, GameboyScreen, scenes/,
                              input.ts, useGameboyInput.ts, audio.ts,
                              gameboy.css (chassis), stage.css (page chrome),
@@ -61,6 +65,19 @@ src/features/rakcerita/      RakCeritaPage (shelf + reader), SongSheet.tsx, song
                              (particles), audio.ts + speech.ts, shelf.ts (books),
                              types.ts, art/ (core, scenes, rak, covers, blocks,
                              RakIcons), stories/ (one file per book), rakcerita.css
+src/features/photobooth/     PhotoboothPage, ExportCanvas.tsx, CropEditor.tsx,
+                             LayoutCard.tsx, StripCanvas.tsx, usePhotobooth.ts
+                             (camera + shots + exports), export.ts (ratios,
+                             backdrops, PNG + WebM), crop.ts (pan/zoom math),
+                             sound.ts (WebAudio signatures), art.ts (canvas
+                             primitives), render/ (index + motion + holo/analog/
+                             print painters), useFontsReady.ts, photobooth.css
+src/features/piara/          PiaraPage, ActionIcon.tsx, usePiara.ts (clock + save +
+                             rAF loop), sim.ts (needs, sleep, evolution), sprite.ts
+                             (160 × 120 renderer), save.ts, audio.ts, types.ts, piara.css
+src/features/warkop/         WarkopPage, useWarkop.ts (loop + save), engine.ts
+                             (customers, burners, scoring), render.ts (320 × 240 scene),
+                             audio.ts, types.ts, warkop.css
 public/                      static files served as-is (favicon, images)
 src/assets/                  images, sounds and fonts imported through src/lib/assets.ts
 story/                       story bible, cast/locations, chapter sheet, technical notes
@@ -70,7 +87,7 @@ There is **no backend**: no `functions/`, no Worker script, no `/api`. Everythin
 as static files.
 
 Routes come from `src/app/routes.ts` only: `/` shelf, `/pokescan`, `/arcade`, `/keluarga`,
-`/rakcerita`, `/gameboy` boot,
+`/rakcerita`, `/photobooth`, `/piara`, `/warkop`, `/gameboy` boot,
 `/gameboy/{menu,start,message,message-display,music,music-display,gallery}`, `*` → 404.
 `/gameboy/Gallery` is redirected in `AppRouter` (`LEGACY_REDIRECTS`). Never write a
 route string literal in a component — import it.
@@ -82,12 +99,19 @@ decorative boot-terminal panel, then the cartridge shelf and three field notes. 
 shelf is data-driven: add one object to `src/content/projects.ts` (`id`, `catalogNo`,
 `title`, `tagline`, `route`, `color`, `colorDark`, `labelColor`, `code`, `tags`, `year`)
 and it appears — colours and the part number are passed to the card as CSS custom
-properties, so the cartridge art needs no changes. Each card is a CSS 3D DMG shell
+properties. The label illustration is a per-id SVG in `CartridgeArt.tsx`; a cartridge
+without a case there falls back to `GenericPackArt`, so draw one when the label matters.
+Each card is a CSS 3D DMG shell
 (extruded back plate, embossed logo plate, grip ribs, recessed sticker); it leans toward
 the pointer via `lib/useTilt.ts` (mouse only, disabled for reduced motion) and straightens
 on hover/focus. The readable title/description sit in the caption below the sculpture;
 copy lives in `src/content/landing.ts` and `content/projects.ts`, never in JSX. The
 landing does **not** use `SiteHeader` — that is the compact header for cartridge pages.
+The cover never points at two hand-picked cartridges: `HERO.actions` drives a "browse the
+shelf" action that scrolls to `SHELF_ID` (keep that id on the shelf section) and a
+"surprise me" action that links to a cartridge picked per visit, and `HERO.quickLabel`
+captions a numbered shortcut for every entry in `CARTRIDGES` — both grow with the
+registry.
 
 **Game Boy.** `GameboyPage` owns state, the fit-to-viewport scale and the input
 handling; `GameboyChassis` is the dumb physical artwork (it takes `onControl`);
@@ -151,11 +175,109 @@ under `ihsnn:rakcerita:progress` and `ihsnn:rakcerita:settings` (localStorage).
 `rakcerita.css` is the old page stylesheet scoped to the `.rak-cerita` root: do not add
 unscoped selectors there, or the palette and the `border-radius:0` reset leak site-wide.
 
+**Photo Booth.** `features/photobooth/` is the 39-layout photo-strip cartridge at
+`/photobooth`. The split is strict:
+- `content/photobooth.ts` is the whole catalogue (`STRIP_LAYOUTS`: copy, 1-or-2 slot
+  count, design size, style id, shine, `date`, optional `motion`, picker theme,
+  per-layout sound recipe) plus every page string, the export shapes and the backdrop
+  list. `LEGACY_LAYOUT_IDS` keeps old `?strip=` ids working.
+- `render/` is the only code that draws. `art.ts` holds shared primitives (rounded clips,
+  cover-cropped photos with designed placeholders, grain, halftone, barcode, holo,
+  gloss, `formatDate`); `holo.ts`, `analog.ts` and `print.ts` each export a `Painter` map
+  and `render/index.ts` merges them into `Record<StripLayout['style'], Painter>` so a new
+  catalogue style is compiler-checked. `renderStrip()` owns canvas sizing and the single
+  scale transform; painters stay in design-space units and receive `date` plus `time`
+  (0 for a still). `render/motion.ts` paints the looping shine/scan/tape pass after the
+  painter, so a video frame shares every pixel with the PNG.
+- `export.ts` wraps the strip: `planFrame()` decides the final canvas (native strip,
+  1:1, 4:5 or 9:16), `composeStrip()` paints the backdrop plus the strip, `exportImage()`
+  returns the PNG and `exportVideo()` records a four-second WebM loop with
+  `MediaRecorder`. Backdrops are painted presets (`EXPORT_BACKGROUNDS`) plus `image`:
+  a user photo supplied as `{ image, crop }` and drawn by `drawCrop()`.
+- `PhotoboothPage.tsx` is the view, `usePhotobooth.ts` owns the camera stream, the 3-2-1
+  capture, the local-file fallback, one or two shots, the editable date, the export shape
+  and backdrop (including grabbing a frame as the backdrop), sounds and the downloads.
+  Photos never leave the browser and are not persisted; the only localStorage key is
+  `ihsnn:photobooth:muted`.
+- Picker thumbnails use `StripCanvas.tsx` (the painter at thumb scale) and the preview
+  uses `ExportCanvas.tsx` (the composed export, animated when the layout has motion).
+  Never build a second CSS mock of a strip: a thumbnail would then promise a design the
+  export does not deliver. `useFontsReady.ts` repaints once the Google fonts arrive.
+- Exports bake foil, gloss, grain, the backdrop and the strip shadow into the canvas; the
+  preview adds a CSS sheen on top. Keep both: the downloaded file must still look shiny
+  outside the site. Large exports run at `STRIP_EXPORT_SCALE = 2` (design px × 2); the
+  ratio formats are 1080 px wide and the video scales the strip to ~1080 px on its long
+  edge.
+- Shots keep the original decoded image plus a `CropTransform` (`crop.ts`).
+  `usePhotobooth` bakes it into a canvas with the slot aspect from
+  `STRIP_CROP_ASPECTS`; painters only ever receive cover-ready images, and both the slot
+  sheet and the backdrop sheet use the same `drawCrop()` math. Never crop only in CSS or
+  only at export time.
+- The custom line travels as `Scene.caption` through `renderStrip()` / `composeStrip()`.
+  Each painter draws it at a designed text spot with a `maxWidth` and its own fallback
+  copy. Do not replace this with a generic overlay bar — it would cover the footers and
+  break the individual layouts.
+- Passports are drawn as an open book spread: identity page (photo, fields, MRZ) facing
+  a visa page of stamps. `passportId` is deliberately a souvenir: fictional issuer, a red
+  "SOUVENIR · NOT A TRAVEL DOCUMENT" band and no real state emblem, Indonesian passport
+  wording or captured identity data.
+- Camera access needs a user gesture. `getUserMedia` failures are classified as denied /
+  missing / insecure / broken and the gallery fallback is always offered. File picks are
+  downscaled to `MAX_PHOTO_EDGE = 1600` and converted to a data URL before use, which
+  keeps the export canvas untainted and the workflow serverless.
+- `sound.ts` synthesises the shutter, countdown and each catalogue `LayoutSound`
+  selection/finish phrase. No audio files.
+
+**PIARA.** `features/piara/` is the pocket-pet cartridge at `/piara`: a translucent
+keychain with a 160 × 120 LCD. `sim.ts` is the whole rulebook — needs decay in real time,
+sleep restores energy, droppings accumulate, and the creature evolves through
+`telur → bayi → anak → remaja → dewasa` once it is old enough *and* its average need is
+above 45. Time is real rather than simulated by a loop: `advance(pet, now)` catches up
+however long the tab was closed (capped at 36 h), which is why a closed tab still costs
+food and why the cartridge needs no server.
+- `sprite.ts` draws the room, the egg and the layered creature from rectangles; there are
+  no sprite sheets and no audio files. The palette follows the device clock — blue day,
+  peach dawn, violet dusk, indigo night — and the need gauges sit on a translucent card
+  so they stay readable at every hour. Keep the canvas at 160 × 120 and let CSS scale it
+  (`image-rendering: pixelated`).
+- `usePiara.ts` owns the 1 s tick, the rAF loop, the naming sheet, the save and the
+  speaker. Save key `ihsnn:piara:save` (version 1, one slot); mute key
+  `ihsnn:piara:muted`.
+- The egg is a five-tap hatch followed by a naming dialog. While `name` is empty,
+  `advance()` deliberately does not age the pet — do not remove that guard.
+- Copy (bubbles, refusals, stage notes, the naming sheet) lives in `content/piara.ts`;
+  tuning (decay per hour, growth thresholds, the evolution gate) lives in `sim.ts`.
+
+**WARKOP.** `features/warkop/` is the 90-second counter cartridge at `/warkop`: a beige
+cash register with a striped awning, a 320 × 240 colour screen and five moulded menu keys.
+- `engine.ts` is headless and holds all tuning: four fixed seats, customers arriving on a
+  curve that tightens towards closing, orders of one to three dishes, patience that turns
+  into tips, and a hard **two-burner** limit (`MAX_BURNERS`) — that limit is the game's
+  only real decision. A completed order is handed over automatically; there is no serve
+  click. Day length, spawn curve, patience and the tip formula live here.
+- `render.ts` draws the room, shelves, clock, four regulars and their order tickets at
+  320 × 240. A ticket is a vertical receipt: a 12 px food icon plus the 8 px dish name per
+  row, so it maps one-to-one to the five register keys. `drawItemIcon` is shared with the
+  counter tray. Keep coordinates in the 320 × 240 design grid: `useWarkop` sizes the
+  backing store to CSS size × DPR and `renderWarkop` applies the scale, so text is crisp
+  instead of an upscaled 320 px bitmap.
+- `useWarkop.ts` owns the rAF loop, a 10 Hz snapshot for the register keys, the `1`–`5`
+  and `Enter` shortcuts, the speaker and the best day (`ihsnn:warkop:best`). Mute is
+  `ihsnn:warkop:muted`.
+- The menu catalogue, prices, prep times and every string live in `content/warkop.ts`;
+  changing a dish should not touch the engine. Serve → happy → leave is the only customer
+  animation path; do not add a manual serve click without revisiting the burner balance.
+
 **Audio.** Each cartridge owns its sound. `features/gameboy/audio.ts` is the console's
 only audio owner: one ambient loop at a time (`playAmbient`/`stopAmbient`), UI blips
 (`playUiSound`), and a persisted mute flag (`useSoundMuted`, `toggleMuted`).
 `features/arcade/sound.ts` is a tiny oscillator synth with no audio files and its own
-persisted mute (`ihsnn:arcade:muted`). The story cartridge is currently silent.
+persisted mute (`ihsnn:arcade:muted`). The photobooth's `sound.ts` is a WebAudio synth
+driven by each layout's note recipe with its own persisted mute
+(`ihsnn:photobooth:muted`). PIARA's `audio.ts` is a triangle-wave toy speaker (chirps
+rather than the arcade's square stabs), muted under `ihsnn:piara:muted`. WARKOP's
+`audio.ts` synthesises the shop bell, a filtered-noise sizzle, the cash cha-ching and the
+closing gong, muted under `ihsnn:warkop:muted`. The story cartridge is currently silent.
 `use-sound` is no longer used — leave it installed but don't reach for it.
 
 **PokéScan.** All client-side, no API keys:
@@ -170,9 +292,10 @@ The page is a one-column device on phones and a two-column "Pokédex spread" fro
 read, so the device never shifts when a result arrives.
 
 **No backend.** Everything is client-side: PokéScan calls TCGdex directly from the
-browser, the console is pure CSS/audio. There is no `functions/` directory, no Worker
-script and no API route. If a server is ever needed, make it a real Worker with a `main`
-entry rather than reintroducing Pages Functions.
+browser, the photobooth processes camera frames and files on-device and downloads a
+local PNG, and the console is pure CSS/audio. There is no `functions/` directory, no
+Worker script and no API route. If a server is ever needed, make it a real Worker with a
+`main` entry rather than reintroducing Pages Functions.
 
 ## Conventions
 
@@ -184,8 +307,9 @@ entry rather than reintroducing Pages Functions.
 - Three stylesheets describe the console, on purpose, and none of them should be
   refactored into components: `gameboy.css` (≈165 KB of chassis artwork, edit surgically),
   `stage.css` (page chrome + scaling), `scenes/scenes.css` (LCD typography).
-  `pokescan.css`, `landing.css`, `arcade.css`, `keluarga.css` and `rakcerita.css` are
-  the other page sheets; shared chrome lives in `components/shared/shared.css`.
+  `pokescan.css`, `landing.css`, `arcade.css`, `keluarga.css`, `rakcerita.css`,
+  `photobooth.css`, `piara.css` and `warkop.css` are the other page sheets; shared chrome
+  lives in `components/shared/shared.css`.
   `rakcerita.css` is the exception to "no scoping": it is the old standalone page
   stylesheet, and every rule hangs off `.rak-cerita` on purpose.
 - Colours/fonts come from `src/styles/tokens.css`; extend it rather than re-declaring a

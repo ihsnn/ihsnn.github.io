@@ -13,6 +13,12 @@ export const ROUTES = {
   keluarga: '/keluarga',
   /** Shelf of tappable picture books (four stories on one cartridge). */
   rakcerita: '/rakcerita',
+  /** Photobooth: pick a strip, shoot, download a PNG — all on-device. */
+  photobooth: '/photobooth',
+  /** Pocket pet: a keychain creature that grows in real time. */
+  piara: '/piara',
+  /** Warkop counter: four seats, five dishes, ninety seconds per day. */
+  warkop: '/warkop',
   /** Boot screen of the console; every other scene hangs off it. */
   gameboy: '/gameboy',
 } as const
@@ -62,4 +68,6 @@ export function gameboySceneFromPath(pathname: string): GameboySceneId | null {
 export const LEGACY_REDIRECTS: ReadonlyArray<{ from: string; to: string }> = [
   // `/gameboy/Gallery` was the only capitalised segment; it is lowercase now.
   { from: '/gameboy/Gallery', to: GAMEBOY_SCENE_PATHS.gallery },
+  // The warkop cartridge was briefly called "warung" while it was being built.
+  { from: '/warung', to: ROUTES.warkop },
 ]

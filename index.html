@@ -7,7 +7,7 @@
     <title>IHSNN — Playground</title>
     <meta
       name="description"
-      content="A shelf of small browser toys — a hand-built Game Boy, a Pokémon card scanner, a neon arcade cabinet, a pixel family story, and whatever gets plugged in next."
+      content="A shelf of small browser toys — a hand-built Game Boy, a Pokémon card scanner, a neon arcade cabinet, a pixel family story, a shelf of picture books, a photobooth with 25 strips, a pocket creature named PIARA, a ninety-second shift at a warkop, and whatever gets plugged in next."
     />
     <meta name="theme-color" content="#1a1a1f" />
     <meta name="color-scheme" content="dark" />
@@ -19,8 +19,13 @@
       content="A shelf of small browser toys, mostly nostalgic hardware rebuilt in React."
     />
 
-    <link rel="icon" type="image/png" href="/images/hexheart.png" />
-    <link rel="apple-touch-icon" href="/images/hexheart.png" />
+    <!-- Icon set: one pixel heart on a handheld LCD. SVG for modern browsers,
+         PNG/ICO fallbacks (plus the opaque apple-touch square) for the rest. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

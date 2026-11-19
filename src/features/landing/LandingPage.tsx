@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { FIELD_NOTES, MARQUEE_WORDS } from '../../content/landing'
+import { FIELD_NOTES, MARQUEE_WORDS, SHELF_ID } from '../../content/landing'
 import { CARTRIDGES, type Cartridge as CartridgeProject } from '../../content/projects'
 import Cartridge from './Cartridge'
 import Hero from './Hero'
@@ -32,7 +32,11 @@ export default function LandingPage() {
         <div className="hub-shell">
           <Hero />
 
-          <section className="hub-shelf" aria-labelledby="hub-shelf-heading">
+          <section
+            className="hub-shelf"
+            id={SHELF_ID}
+            aria-labelledby="hub-shelf-heading"
+          >
             <div className="hub-section-head">
               <div>
                 <p className="hub-section-label">01 — the shelf</p>

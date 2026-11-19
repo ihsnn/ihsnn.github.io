@@ -15,6 +15,9 @@ const PokeScanPage = lazy(() => import('../features/pokescan/PokeScanPage'))
 const ArcadePage = lazy(() => import('../features/arcade/ArcadePage'))
 const KeluargaPage = lazy(() => import('../features/keluarga/KeluargaPage'))
 const RakCeritaPage = lazy(() => import('../features/rakcerita/RakCeritaPage'))
+const PhotoboothPage = lazy(() => import('../features/photobooth/PhotoboothPage'))
+const PiaraPage = lazy(() => import('../features/piara/PiaraPage'))
+const WarkopPage = lazy(() => import('../features/warkop/WarkopPage'))
 
 function RouteFallback() {
   return (
@@ -64,6 +67,33 @@ export default function AppRouter() {
           element={
             <Suspense fallback={<RouteFallback />}>
               <RakCeritaPage />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path={ROUTES.photobooth}
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <PhotoboothPage />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path={ROUTES.piara}
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <PiaraPage />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path={ROUTES.warkop}
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <WarkopPage />
             </Suspense>
           }
         />

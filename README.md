@@ -1,7 +1,7 @@
 # IHSNN — playground
 
 A shelf of small browser toys, mostly nostalgic hardware rebuilt in React.
-Four cartridges are plugged in today:
+Eight cartridges are plugged in today:
 
 | Cartridge | Route | What it is |
 | --- | --- | --- |
@@ -9,6 +9,10 @@ Four cartridges are plugged in today:
 | **POKÉSCAN** | `/pokescan` | Point a camera (or upload a photo) at a Pokémon TCG card and get its card data back. OCR runs on-device. |
 | **NEON BREAKER** | `/arcade` | An upright neon arcade cabinet with a six-stage brick-buster, chiptune SFX and a persisted high score. |
 | **KELUARGA KECIL-KECILAN** | `/keluarga` | A GBC-style family story. Chapter 1, “Tentang Aku,” is a playable room with character creation, keepsakes and autosave. |
+| **RAK CERITA KALUNA** | `/rakcerita` | Four tappable picture books with narration, songs and a shelf that never stays tidy. |
+| **PHOTOBOOTH** | `/photobooth` | Twenty-five photo-strip layouts drawn on canvas. Shoot or pick one or two photos, crop/reposition them, add a line of text, hear each template’s sound, and download the PNG — all on-device. |
+| **PIARA** | `/piara` | A pocket creature on a translucent keychain. Hatch and name it, then keep three needs up while real time passes; it grows through four stages and keeps one save slot in `localStorage`. |
+| **WARKOP** | `/warkop` | A beige cash register with four seats: cook five dishes on two burners, read the queue, and keep the tips coming for ninety seconds. |
 
 React 18 · TypeScript (strict) · Vite 5 · Recoil · React Router 6 · Tailwind + hand-written CSS.
 
@@ -31,6 +35,10 @@ Every URL is declared once in [`src/app/routes.ts`](src/app/routes.ts):
 /pokescan             PokéScan
 /arcade               Neon Breaker cabinet
 /keluarga             Keluarga Kecil-Kecilan, Bab 1
+/rakcerita            Rak Cerita Kaluna
+/photobooth           Photo Booth (25 strips)
+/piara                PIARA, the pocket creature
+/warkop               WARKOP, the ninety-second counter
 /gameboy              console boot screen
 /gameboy/menu         console menu
 /gameboy/start        intro scene
@@ -58,6 +66,10 @@ src/
     arcade/       Neon Breaker game engine, canvas renderer, cabinet UI, chiptune audio
     keluarga/     family-story room engine, character sprites, GBC-style UI, save
     pokescan/     scanner UI, OCR services, TCGdex client
+    rakcerita/    picture-book shelf, stage runtime, SVG art, stories, synth audio
+    photobooth/   strip catalogue, canvas painters, camera/photo hook, booth UI
+    piara/        real-time pet simulation, 160×120 canvas renderer, keychain shell, save
+    warkop/       counter simulation engine, 320×240 canvas renderer, register UI, save
   lib/            assets registry, scroll helpers, fit-to-viewport hook
   state/          Recoil atoms (user state only)
   styles/         design tokens + base layer
@@ -67,8 +79,9 @@ story/            story bible, cast/locations, chapter sheet, technical notes
 ```
 
 There is no backend — no `functions/`, no Worker script, no `/api`. Everything ships as
-static files; PokéScan queries TCGdex directly from the browser. The story cartridge
-keeps its character and chapter progress in `localStorage`.
+static files; PokéScan queries TCGdex directly from the browser, the photobooth keeps
+every camera frame and file on-device, and the story cartridge keeps its character and
+chapter progress in `localStorage`.
 
 The story bible, cast sheet and chapter worksheets live in [`story/`](story/README.md).
 
@@ -117,6 +130,39 @@ The story bible, cast sheet and chapter worksheets live in [`story/`](story/READ
 | Move | Arrow keys / `W` `A` `S` `D`, or the on-screen D-pad |
 | Inspect / advance / choose | `Space` or `Enter`, or the on-screen `A` button |
 | Pause / menu | `Esc`, or the console’s MENU button |
+
+**Photo Booth**
+
+| Action | Keyboard / pointer |
+| --- | --- |
+| Pick a strip | Click/tap a layout card; deep link with `?strip=<id>` or `#<id>` |
+| Start camera | The “Nyalakan kamera” button (permission prompt) |
+| Shoot | The shutter button — a 3–2–1 countdown runs first |
+| Local photo | “Pilih dari galeri” or the per-slot “Pilih” action |
+| Reposition / crop | “Atur” on a filled slot; drag, zoom, nudge, then “Terapkan” |
+| Custom text | The “Tulisan strip” field in Step 03; up to 40 characters |
+| Mute | The speaker button; the flag persists in `ihsnn:photobooth:muted` |
+| Download | “Unduh PNG” once every slot is filled |
+
+**PIARA**
+
+| Action | Keyboard / pointer |
+| --- | --- |
+| Hatch | Tap the egg five times |
+| Name | The sheet that appears after hatching |
+| Feed / play / sleep / clean | The four case buttons, or `F` / `P` / `S` / `C` |
+| Wake | Press `BANGUN` (the sleep button) |
+| Mute | The speaker button on the case; the flag persists in `ihsnn:piara:muted` |
+
+**WARKOP**
+
+| Action | Keyboard / pointer |
+| --- | --- |
+| Open the shop | The “BUKA WARKOP” button, or `Enter` |
+| Cook a dish | The five register keys, or `1`–`5` |
+| Close a day early | The red `TUTUP` button on the machine |
+| Mute | The speaker button on the machine; the flag persists in `ihsnn:warkop:muted` |
+| Best day | Saved automatically under `ihsnn:warkop:best` |
 
 ## Building for the web
 

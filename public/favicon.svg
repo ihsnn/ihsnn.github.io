@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-labelledby="favicon-title">
+  <title id="favicon-title">IHSNN Playground — a pixel heart on the handheld screen</title>
+  <defs>
+    <linearGradient id="case" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b2c37"/>
+      <stop offset=".42" stop-color="#1a1a1f"/>
+      <stop offset="1" stop-color="#111115"/>
+    </linearGradient>
+    <linearGradient id="bevel-hi" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".14"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="bevel-lo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".38"/>
+    </linearGradient>
+    <linearGradient id="lcd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset=".17" stop-color="#a3aa46"/>
+      <stop offset=".82" stop-color="#949b39"/>
+      <stop offset="1" stop-color="#9aa13c"/>
+    </linearGradient>
+    <clipPath id="case-clip"><rect width="32" height="32" rx="7.0"/></clipPath>
+  </defs>
+
+  <!-- moulded shell, lit from above -->
+  <rect width="32" height="32" rx="7.0" fill="url(#case)"/>
+  <g clip-path="url(#case-clip)">
+    <rect width="32" height="3.0" fill="url(#bevel-hi)"/>
+    <rect y="28.0" width="32" height="4.0" fill="url(#bevel-lo)"/>
+  </g>
+  <!-- flat plastic face inside the bevel -->
+  <rect x="1.7" y="1.7" width="28.6" height="28.6" rx="5.7" fill="#1a1a1f"/>
+
+  <!-- recessed LCD: dark well, olive screen -->
+  <rect x="2.0" y="2.0" width="28.00" height="25.20" rx="4.4" fill="#0e0e13"/>
+  <rect x="2.85" y="2.85" width="26.30" height="23.50" rx="3.7" fill="url(#lcd)"/>
+
+  <!-- the heart: one path, so the pixel cells have no seams -->
+  <path d="M10.825 8.275h3.450v1.150H10.825zM17.725 8.275h3.450v1.150H17.725zM9.675 9.425h5.750v1.150H9.675zM16.575 9.425h5.750v1.150H16.575zM8.525 10.575h14.950v1.150H8.525zM8.525 11.725h14.950v1.150H8.525zM8.525 12.875h14.950v1.150H8.525zM9.675 14.025h12.650v1.150H9.675zM10.825 15.175h10.350v1.150H10.825zM11.975 16.325h8.050v1.150H11.975zM13.125 17.475h5.750v1.150H13.125zM14.275 18.625h3.450v1.150H14.275zM15.425 19.775h1.150v1.150H15.425z" fill="#eae6da"/>
+
+  <!-- chin: power LED + speaker -->
+  <circle cx="6.15" cy="28.9" r="1.55" fill="#5ee6c8" opacity=".27"/>
+  <circle cx="6.15" cy="28.9" r="1.0" fill="#5ee6c8"/>
+  <g fill="#3d3e4a">
+    <rect x="23.3" y="27.45" width="4.6" height="0.56" rx="0.28"/>
+    <rect x="23.3" y="28.5" width="4.6" height="0.56" rx="0.28"/>
+    <rect x="23.3" y="29.55" width="4.6" height="0.56" rx="0.28"/>
+  </g>
+</svg>

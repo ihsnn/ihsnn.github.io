@@ -2,8 +2,9 @@ import { ROUTES } from '../app/routes'
 
 /**
  * The cartridge shelf. Adding an entry here is enough to ship a new project:
- * the landing page renders it and the cartridge art is derived from the
- * colours below.
+ * the landing page renders it, the shell uses the colours and part number
+ * below, and `features/landing/CartridgeArt.tsx` supplies the label
+ * illustration (with a generic pack as the fallback).
  */
 export interface Cartridge {
   /** Stable id, never shown — used as React key and for analytics later. */
@@ -94,6 +95,48 @@ export const CARTRIDGES: readonly Cartridge[] = [
     labelColor: '#ffe9b8',
     code: 'DMG-RC-USA',
     tags: ['Four stories', 'Web audio', 'Read aloud'],
+    year: '2026',
+  },
+  {
+    id: 'photobooth',
+    catalogNo: '06',
+    title: 'PHOTOBOOTH',
+    tagline:
+      'Twenty-five photo strips with foil and gloss: shoot or pick one or two photos, crop them, add a line of text, and download the PNG — nothing leaves the device.',
+    route: ROUTES.photobooth,
+    color: '#ff5cb8',
+    colorDark: '#71103f',
+    labelColor: '#fff0f7',
+    code: 'DMG-PB-USA',
+    tags: ['25 layouts', 'Camera', 'Crop & text'],
+    year: '2026',
+  },
+  {
+    id: 'piara',
+    catalogNo: '07',
+    title: 'PIARA',
+    tagline:
+      'A pocket creature on a keychain: hatch it, name it, and keep it fed while real time passes — even with the tab closed.',
+    route: ROUTES.piara,
+    color: '#7ed9c2',
+    colorDark: '#2b6f60',
+    labelColor: '#f6f1d8',
+    code: 'DMG-PR-USA',
+    tags: ['Virtual pet', 'Canvas', 'localStorage'],
+    year: '2026',
+  },
+  {
+    id: 'warkop',
+    catalogNo: '08',
+    title: 'WARKOP',
+    tagline:
+      'A beige cash register at a warkop: four seats and five dishes to keep the queue fed for ninety seconds.',
+    route: ROUTES.warkop,
+    color: '#d9a13c',
+    colorDark: '#7a4a1c',
+    labelColor: '#fff3d6',
+    code: 'DMG-WK-USA',
+    tags: ['Tiny sim', 'Canvas', 'Web audio'],
     year: '2026',
   },
 ]

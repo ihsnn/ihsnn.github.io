@@ -1,15 +1,16 @@
-import { ROUTES } from '../app/routes'
-
 /**
  * Landing page copy.
  *
- * Kept as data so the cover can be re-worded without touching layout, and so
- * every number ("04 cartridges") is derived from the cartridge registry.
+ * Kept as data so the cover can be re-worded without touching layout. Counts
+ * are never typed in here — the nav reads `CARTRIDGES.length`.
  */
 
-export interface HeroCta {
+export interface HeroAction {
+  /** Which handler the cover wires up; the label/glyph stay here. */
+  id: 'browse' | 'shuffle'
   label: string
-  route: string
+  /** Decorative glyph printed after the label. */
+  glyph: string
   primary?: boolean
 }
 
@@ -21,7 +22,9 @@ export interface HeroCopy {
   /** Swapped into the second line as a pixel-font highlight chip. */
   titleChip: string
   lede: string
-  ctas: HeroCta[]
+  actions: HeroAction[]
+  /** Caption above the numbered shelf shortcuts. */
+  quickLabel: string
   meta: string[]
 }
 
@@ -31,12 +34,16 @@ export const HERO: HeroCopy = {
   titleBottom: 'rebuilt in the',
   titleChip: 'browser',
   lede: 'A shelf of small, playful interfaces — old machines, one loud arcade cabinet and one small family story, rebuilt with real CSS, real audio and far too much attention to a 1989 plastic shell. Pick a cartridge and boot it up; everything runs in your browser.',
-  ctas: [
-    { label: 'Boot the console', route: ROUTES.gameboy, primary: true },
-    { label: 'Scan a card', route: ROUTES.pokescan },
+  actions: [
+    { id: 'browse', label: 'Browse the shelf', glyph: '↓', primary: true },
+    { id: 'shuffle', label: 'Surprise me', glyph: '→' },
   ],
+  quickLabel: 'Quick insert',
   meta: ['No sign-up', 'No backend', 'Sound included'],
 }
+
+/** Section id the cover's "browse" action scrolls to. */
+export const SHELF_ID = 'hub-shelf'
 
 /** Lines printed in the cover terminal. Keep them short — it is a small panel. */
 export const BOOT_LINES: Array<{ text: string; dim?: boolean }> = [

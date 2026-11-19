@@ -1,7 +1,21 @@
-import { Link } from 'react-router-dom'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+} from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import type { Cartridge as CartridgeProject } from '../../content/projects'
 import { SHELF } from '../../content/landing'
 import { useTilt } from '../../lib/useTilt'
+import CartridgeArt from './CartridgeArt'
+
+/** How long the boot spin plays before the route changes. Keep in sync with
+ *  the `cartridge-boot` animation in landing.css. */
+const BOOT_MS = 2000
+/** Ignore a second cartridge activated while the first is already booting. */
+const BOOT_LOCK_MS = 2300
+let lastBootAt = 0
 
 interface CartridgeProps {
   project: CartridgeProject
@@ -10,9 +24,10 @@ interface CartridgeProps {
 /**
  * One cartridge on the shelf, built the way the real shell is: a coloured
  * plastic body with an embossed logo plate, grip ribs, a recessed sticker and
- * a moulded arrow at the bottom. The body sits in a small CSS 3D scene —
- * perspective, an extruded back plate and a cast shadow — and leans toward
- * the pointer through `useTilt`.
+ * a moulded arrow at the bottom. The sticker carries a per-game illustration
+ * (`CartridgeArt`) above the printed title. The body sits in a small CSS 3D
+ * scene — perspective, an extruded back plate and a cast shadow — and leans
+ * toward the pointer through `useTilt`.
  *
  * The sculpture is decorative; the caption below it carries the readable
  * title, description and link, so the card still makes sense with images off
@@ -20,6 +35,38 @@ interface CartridgeProps {
  */
 export default function Cartridge({ project }: CartridgeProps) {
   const { ref, handlers } = useTilt<HTMLAnchorElement>()
+  const navigate = useNavigate()
+  const [booting, setBooting] = useState(false)
+  const bootingRef = useRef(false)
+  const bootTimer = useRef<number | null>(null)
+
+  useEffect(
+    () => () => {
+      if (bootTimer.current !== null) window.clearTimeout(bootTimer.current)
+    },
+    [],
+  )
+
+  const handleClick = (event: ReactMouseEvent<HTMLAnchorElement>) => {
+    if (event.defaultPrevented) return
+    if (event.button !== 0) return
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    // Mouse, keyboard and touch all get the same boot spin: hold the route
+    // change for the full animation. Modified clicks (new tab) stay instant,
+    // and the lock stops a second cartridge from starting its own boot.
+    event.preventDefault()
+    const now = performance.now()
+    if (bootingRef.current || now - lastBootAt < BOOT_LOCK_MS) return
+
+    lastBootAt = now
+    bootingRef.current = true
+    setBooting(true)
+    bootTimer.current = window.setTimeout(() => {
+      navigate(project.route)
+    }, BOOT_MS)
+  }
 
   // The sticker has a narrow print area, so size the title to its longest
   // unbreakable word: most games get a bold single line, the long family
@@ -33,9 +80,10 @@ export default function Cartridge({ project }: CartridgeProps) {
     <Link
       to={project.route}
       ref={ref}
-      className="cartridge"
+      className={booting ? 'cartridge is-booting' : 'cartridge'}
       aria-label={`${project.title} — ${project.tagline}`}
       {...handlers}
+      onClick={handleClick}
     >
       <span className="cartridge__stage" aria-hidden="true">
         <span className="cartridge__shadow" />
@@ -72,6 +120,10 @@ export default function Cartridge({ project }: CartridgeProps) {
                       <span className="cartridge__art-top">
                         <span>NO. {project.catalogNo}</span>
                         <span>{SHELF.logo}</span>
+                      </span>
+
+                      <span className="cartridge__art-scene">
+                        <CartridgeArt id={project.id} />
                       </span>
 
                       <span className="cartridge__art-body">
