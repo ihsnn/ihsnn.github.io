@@ -39,6 +39,8 @@ src/content/rakcerita.ts     picture-book copy: shelf chrome, reader buttons, sh
 src/content/photobooth.ts    strip catalogue + booth copy + per-layout sound recipes
 src/content/piara.ts         pocket-pet copy: actions, moods, stages, naming sheet
 src/content/warkop.ts        warkop menu catalogue + page copy + rupiah helpers
+src/content/todo.ts          to-do copy, priorities, level titles, seed tasks, formatters
+src/content/angkut.ts        hill-climb levels (terrain, cargo, palette), garage, copy
 src/state/gameboy.ts         Recoil atoms (power, indices, envelope) — user state only
 src/lib/assets.ts            media registry + `remote()` seam for future CDN hosting
 src/lib/scroll.ts            scroll helpers that take an element (no #scroll lookups)
@@ -78,6 +80,13 @@ src/features/piara/          PiaraPage, ActionIcon.tsx, usePiara.ts (clock + sav
 src/features/warkop/         WarkopPage, useWarkop.ts (loop + save), engine.ts
                              (customers, burners, scoring), render.ts (320 × 240 scene),
                              audio.ts, types.ts, warkop.css
+src/features/todo/           TodoPage, useTodo.ts (list + selection + undo + autosave),
+                             quest.ts (XP, levels, streaks, ordering), save.ts, audio.ts,
+                             types.ts, todo.css
+src/features/angkut/         AngkutPage, useAngkut.ts (loop + pedals + save), engine.ts
+                             (rigid-body truck, 180 Hz, runs and pickups), terrain.ts
+                             (seeded road + kicker ramps), render.ts (480 × 270 world),
+                             audio.ts, save.ts, types.ts, angkut.css
 public/                      static files served as-is (favicon, images)
 src/assets/                  images, sounds and fonts imported through src/lib/assets.ts
 story/                       story bible, cast/locations, chapter sheet, technical notes
@@ -87,7 +96,7 @@ There is **no backend**: no `functions/`, no Worker script, no `/api`. Everythin
 as static files.
 
 Routes come from `src/app/routes.ts` only: `/` shelf, `/pokescan`, `/arcade`, `/keluarga`,
-`/rakcerita`, `/photobooth`, `/piara`, `/warkop`, `/gameboy` boot,
+`/rakcerita`, `/photobooth`, `/piara`, `/warkop`, `/todo`, `/angkut`, `/gameboy` boot,
 `/gameboy/{menu,start,message,message-display,music,music-display,gallery}`, `*` → 404.
 `/gameboy/Gallery` is redirected in `AppRouter` (`LEGACY_REDIRECTS`). Never write a
 route string literal in a component — import it.
@@ -268,6 +277,60 @@ cash register with a striped awning, a 320 × 240 colour screen and five moulded
   changing a dish should not touch the engine. Serve → happy → leave is the only customer
   animation path; do not add a manual serve click without revisiting the burner balance.
 
+**TO-DO LIST.** `features/todo/` is the pocket-organizer cartridge at `/todo`: a graphite
+TASK-9 with an amber LCD, a D-pad, A/B keys and four flat command keys. The split:
+- `quest.ts` is the rulebook and has no React: text hygiene (trim, collapse, cap at 90),
+  the sixty-task limit, priority XP, the level curve (`100 + (level - 1) * 60`), combo
+  windows, local-day streaks, display ordering (open in insertion order, done oldest
+  first) and the four seed tasks. `liveStreak()` is what the UI shows: a stored streak
+  whose last completion is older than yesterday reads as zero until the next tick.
+- `useTodo.ts` owns the list, selection, the ten-entry session undo stack, the clock, the
+  autosave and the speaker. Actions read `stateRef` rather than the render's state, so two
+  rapid key presses cannot overwrite each other — keep that pattern when adding an action.
+  Add, tick, priority, delete, undo (`Ctrl+Z`), clear-done, clear-all and reset all live
+  here; the page only binds keys and buttons to them.
+- `save.ts` is `ihsnn:todo:save` (version 1, one slot) plus `ihsnn:todo:muted`. It
+  validates every task and falls back per field, so a partial save still loads. Emptying
+  the list keeps XP/level/streak on purpose; `resetAll()` clears the key and reseeds the
+  four examples.
+- `TodoPage.tsx` renders the device as DOM, not canvas, because the list must stay
+  writable, focusable and selectable. The LCD is a real form (`>` + input + TAMBAH), each
+  row is a checkbox button plus select/priority/delete buttons, and the D-pad/A/B keys
+  call the same controller actions. The window-level keyboard listener ignores typing and
+  native button activation; removing those guards makes Space/Enter fire twice.
+- `todo.css` is the case, amber LCD and keycaps, scoped to `.todo-page`. The checkbox is a
+  26 × 26 hit area around a 17 px box — keep the visual box smaller than the target.
+
+**ANGKUT.** `features/angkut/` is the hill-climb hauler at `/angkut`: a big dump truck,
+two pedals, six routes and six loads. The whole point is that the load is a gameplay
+stat, not a skin:
+- `engine.ts` is headless and owns every rule. A fixed 180 Hz loop integrates one rigid
+  body; each wheel is a raycast suspension along the chassis's own down axis (rest +
+  travel, force capped by `MAX_SUPPORT`), and the drive force is clamped by the friction
+  cone under that wheel. That is why a heavy load is slow (force / mass), a tall load
+  tips (`comLocal()` lifts the centre of gravity), and a slippery level spins the tyres.
+  Do not "simplify" the suspension back to a rigid wheel: it launched the truck off ramps
+  and made landings unrecoverable. A pitch assist only runs while a wheel is on the road,
+  and is what stops bumps under the front wheel from becoming backflips.
+- `terrain.ts` bakes the seeded hills into a slope-limited table (so no route can contain
+  a wall the heaviest truck cannot climb) and then adds the kicker ramps on top — the
+  only place the road is allowed to be sharp. `render.ts` and the wheels sample that same
+  `heightAt()`; never draw a road from a second function.
+- `render.ts` draws the 480 × 270 world from primitives (no sprites): sky, parallax
+  ridges, the road, coins, cans, depot flag, truck and the six cargo painters. The truck's
+  geometry is `TRUCK` in `engine.ts`, so painting and collision share one set of numbers.
+  `useAngkut` sizes the backing store to CSS × DPR and the renderer applies one scale —
+  keep design-space coordinates, and keep the canvas at 16 / 9.
+- `useAngkut.ts` owns the rAF loop, the pedals (pointer capture on a hold, keyboard
+  `→/D` gas, `←/A` brake, `Enter`, `R`, `M`), the 10 Hz snapshot, the garage purchase and
+  the save. `save.ts` is `ihsnn:angkut:progress` (version 1: coins, `{engine, tires,
+  tank}` 0–3, one record per route) plus `ihsnn:angkut:muted`; every field is validated,
+  and a route opens only once the one before it is cleared.
+- Adding a route is one object in `content/angkut.ts` (`terrain`, `cargo`, `palette`,
+  `grip`, `targetM`, copy) — the engine, the renderer, the picker and the garage all grow
+  from `LEVELS` and `GARAGE`. Cargo `mass`/`height`/`slide` are the level's difficulty
+  dial; `shape` picks the painter.
+
 **Audio.** Each cartridge owns its sound. `features/gameboy/audio.ts` is the console's
 only audio owner: one ambient loop at a time (`playAmbient`/`stopAmbient`), UI blips
 (`playUiSound`), and a persisted mute flag (`useSoundMuted`, `toggleMuted`).
@@ -277,7 +340,11 @@ driven by each layout's note recipe with its own persisted mute
 (`ihsnn:photobooth:muted`). PIARA's `audio.ts` is a triangle-wave toy speaker (chirps
 rather than the arcade's square stabs), muted under `ihsnn:piara:muted`. WARKOP's
 `audio.ts` synthesises the shop bell, a filtered-noise sizzle, the cash cha-ching and the
-closing gong, muted under `ihsnn:warkop:muted`. The story cartridge is currently silent.
+closing gong, muted under `ihsnn:warkop:muted`. TASK-9's `audio.ts` is a square/triangle
+organizer speaker (completion blips climb with the combo), muted under
+`ihsnn:todo:muted`. ANGKUT's `audio.ts` is a diesel two-oscillator engine behind a
+low-pass (pitch follows speed and throttle) plus thumps and a coin blip, muted under
+`ihsnn:angkut:muted`. The story cartridge is currently silent.
 `use-sound` is no longer used — leave it installed but don't reach for it.
 
 **PokéScan.** All client-side, no API keys:
@@ -308,8 +375,8 @@ Worker script and no API route. If a server is ever needed, make it a real Worke
   refactored into components: `gameboy.css` (≈165 KB of chassis artwork, edit surgically),
   `stage.css` (page chrome + scaling), `scenes/scenes.css` (LCD typography).
   `pokescan.css`, `landing.css`, `arcade.css`, `keluarga.css`, `rakcerita.css`,
-  `photobooth.css`, `piara.css` and `warkop.css` are the other page sheets; shared chrome
-  lives in `components/shared/shared.css`.
+  `photobooth.css`, `piara.css`, `warkop.css`, `todo.css` and `angkut.css` are the other
+  page sheets; shared chrome lives in `components/shared/shared.css`.
   `rakcerita.css` is the exception to "no scoping": it is the old standalone page
   stylesheet, and every rule hangs off `.rak-cerita` on purpose.
 - Colours/fonts come from `src/styles/tokens.css`; extend it rather than re-declaring a

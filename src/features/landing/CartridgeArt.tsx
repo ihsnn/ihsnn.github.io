@@ -336,6 +336,143 @@ function WarkopArt() {
   )
 }
 
+/** A pocket organizer with three checklist lines on an amber LCD. */
+function TodoArt() {
+  return (
+    <Art>
+      <g transform="rotate(-5 48 28)">
+        <rect
+          x="28"
+          y="3"
+          width="40"
+          height="50"
+          rx="4"
+          fill={PAPER}
+          stroke={INK}
+          strokeWidth="1.2"
+        />
+
+        <rect x="32" y="7" width="32" height="18" rx="1.5" fill={INK} />
+        <rect x="34" y="9" width="28" height="14" rx="1" fill="#141a10" />
+
+        <rect x="36" y="11" width="2.6" height="2.6" fill="#ffc45b" />
+        <rect x="40" y="11.9" width="16" height="1.1" fill="#ffc45b" />
+        <rect x="36" y="15" width="2.6" height="2.6" fill="#ffc45b" />
+        <rect x="40" y="15.9" width="12" height="1.1" fill="#ffc45b" />
+        <rect
+          x="36"
+          y="19"
+          width="2.6"
+          height="2.6"
+          fill="none"
+          stroke="#ffc45b"
+          strokeWidth="0.7"
+        />
+        <rect
+          x="40"
+          y="19.9"
+          width="17"
+          height="1.1"
+          fill="#ffc45b"
+          opacity="0.45"
+        />
+
+        <rect x="35" y="29" width="5" height="2" rx="0.6" fill={INK} />
+        <rect x="42" y="29" width="5" height="2" rx="0.6" fill={INK} />
+        <rect x="49" y="29" width="5" height="2" rx="0.6" fill={INK} />
+
+        <path
+          d="M42 36h2v2.4h2.6v2.4H44v2.4h-2v-2.4h-2.6v-2.4H42z"
+          fill={INK}
+        />
+        <circle cx="55" cy="40" r="2.6" fill="#ffc45b" />
+        <circle cx="61" cy="45" r="2.6" fill="#e88a9a" />
+
+        <rect x="34" y="48" width="12" height="1" fill={INK} opacity="0.55" />
+        <rect x="48" y="48" width="7" height="1" fill={INK} opacity="0.35" />
+      </g>
+
+      <rect x="72" y="9" width="3" height="1.6" rx="0.8" fill="#ffc45b" />
+      <path
+        d="M18 43l1 2.6 2.6 1-2.6 1L18 50l-1-2.4-2.6-1 2.6-1z"
+        fill="#ffc45b"
+        opacity="0.8"
+      />
+    </Art>
+  )
+}
+
+/** A loaded dump truck climbing a hillside, sun behind it. */
+function AngkutArt() {
+  return (
+    <Art>
+      <circle cx="76" cy="16" r="7" fill="#f2b441" opacity="0.7" />
+
+      <path
+        d="M4 52L28 42l22-9 20-6 22-4v33H4z"
+        fill="#a0522b"
+        opacity="0.18"
+      />
+      <path
+        d="M4 52L28 42l22-9 20-6 22-4"
+        fill="none"
+        stroke={INK}
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path d="M4 52h88" stroke={INK} strokeWidth="1" opacity="0.4" />
+
+      <g transform="rotate(-13 48 36)">
+        <rect x="28" y="33" width="40" height="4" rx="1" fill={INK} />
+
+        <path
+          d="M29 27h24v6H29z"
+          fill={PAPER}
+          stroke={INK}
+          strokeWidth="1.1"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M30 27c1-5 5-8 10-8s9 3 12 8z"
+          fill="#e0b06a"
+          stroke={INK}
+          strokeWidth="1.1"
+          strokeLinejoin="round"
+        />
+        <circle cx="46" cy="19" r="1.6" fill={INK} opacity="0.5" />
+        <circle cx="38" cy="20" r="1.3" fill={INK} opacity="0.5" />
+
+        <rect
+          x="53"
+          y="19"
+          width="14"
+          height="17"
+          rx="1.4"
+          fill="#c2603a"
+          stroke={INK}
+          strokeWidth="1.2"
+        />
+        <rect x="56" y="22" width="8" height="6" rx="0.8" fill={PAPER} />
+        <rect x="56" y="31" width="4" height="1.4" fill={PAPER} opacity="0.7" />
+        <rect x="66" y="30" width="2" height="5" fill={INK} />
+        <circle cx="67.5" cy="35" r="1.1" fill="#ffd27a" />
+
+        <circle cx="35" cy="40" r="5" fill={INK} />
+        <circle cx="35" cy="40" r="1.9" fill={PAPER} />
+        <circle cx="61" cy="40" r="5" fill={INK} />
+        <circle cx="61" cy="40" r="1.9" fill={PAPER} />
+      </g>
+
+      <rect x="10" y="44" width="9" height="1.4" fill={PAPER} opacity="0.5" />
+      <rect x="80" y="30" width="7" height="1.4" fill={PAPER} opacity="0.5" />
+      <path
+        d="M16 12l1.2 3 3 1.2-3 1.2L16 20.6l-1.2-3.2-3-1.2 3-1.2z"
+        fill="#ffd27a"
+      />
+    </Art>
+  )
+}
+
 /** Fallback for a cartridge that has not had its label art drawn yet. */
 function GenericPackArt() {
   return (
@@ -378,7 +515,12 @@ export default function CartridgeArt({ id }: { id: string }) {
       return <PiaraArt />
     case 'warkop':
       return <WarkopArt />
+    case 'todo':
+      return <TodoArt />
+    case 'angkut':
+      return <AngkutArt />
     default:
       return <GenericPackArt />
   }
 }
+

@@ -1,0 +1,1310 @@
+/* ==========================================================================
+   ANGKUT — cartridge 09
+   --------------------------------------------------------------------------
+   A steel dashboard for a mountain truck: hazard stripes, a 480 × 270 screen,
+   two pedals and the garage. The road itself is drawn by render.ts; this sheet
+   is the rig, the HUD chrome and the page around them.
+   ========================================================================== */
+
+.angkut-page {
+  --angkut-bg: #120f0c;
+  --angkut-ink: #f4ead6;
+  --angkut-dim: #c2b39a;
+  --angkut-faint: #8b7d68;
+  --angkut-line: rgba(244, 234, 214, 0.12);
+  --angkut-amber: #f2b441;
+  --angkut-amber-deep: #b97a1f;
+  --angkut-rust: #c2603a;
+  --angkut-red: #d9534b;
+  --angkut-mint: #7fe0c4;
+  --angkut-steel: #2a2b31;
+  --angkut-steel-light: #3d3f47;
+  --angkut-asphalt: #1b1a19;
+
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  padding: var(--gutter) 0 calc(var(--gutter) + var(--safe-bottom));
+  background:
+    radial-gradient(ellipse 780px 520px at 10% -10%, rgba(242, 180, 65, 0.13), transparent 64%),
+    radial-gradient(ellipse 680px 460px at 94% 4%, rgba(194, 96, 58, 0.1), transparent 62%),
+    linear-gradient(180deg, #1a1611 0%, var(--angkut-bg) 62%);
+  color: var(--angkut-ink);
+  isolation: isolate;
+}
+
+.angkut-glow,
+.angkut-hazard {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.angkut-glow {
+  background:
+    radial-gradient(circle 420px at 42% 24%, rgba(242, 180, 65, 0.08), transparent 70%),
+    radial-gradient(circle 300px at 84% 62%, rgba(194, 96, 58, 0.06), transparent 72%);
+}
+
+.angkut-hazard {
+  opacity: 0.5;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(242, 180, 65, 0.05) 0 2px,
+    transparent 2px 22px
+  );
+  -webkit-mask-image: linear-gradient(180deg, #000, transparent 70%);
+  mask-image: linear-gradient(180deg, #000, transparent 70%);
+}
+
+.angkut-shell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: calc(var(--safe-top) + 4px) var(--gutter) 0;
+}
+
+.angkut-page .site-header__eyebrow {
+  color: var(--angkut-amber);
+}
+
+.angkut-page .site-header__title em {
+  color: var(--angkut-rust);
+}
+
+.angkut-page :where(button, a):focus-visible {
+  outline: 2px solid var(--angkut-amber);
+  outline-offset: 3px;
+}
+
+/* ---------- Hero ---------- */
+.angkut-hero {
+  max-width: 730px;
+  margin: 4px 0 30px;
+}
+
+.angkut-hero__kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  color: var(--angkut-amber);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.8px;
+}
+
+.angkut-hero__title {
+  margin: 0;
+  color: var(--angkut-ink);
+  font-family: var(--font-pixel);
+  font-size: clamp(15px, 2.4vw, 20px);
+  line-height: 1.8;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+.angkut-hero__blurb {
+  max-width: 64ch;
+  margin: 12px 0 0;
+  color: var(--angkut-dim);
+  font-size: 14.5px;
+  line-height: 1.75;
+}
+
+.angkut-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.angkut-badges li {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 6px 9px;
+  border: 1px solid var(--angkut-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--angkut-faint);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.9px;
+}
+
+.angkut-badges b {
+  color: var(--angkut-amber);
+  font-weight: 500;
+}
+
+/* ---------- Layout ---------- */
+.angkut-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 650px) minmax(0, 340px);
+  gap: clamp(24px, 3.4vw, 46px);
+  align-items: start;
+  justify-content: center;
+}
+
+.angkut-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.angkut-main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.angkut-main .angkut-card {
+  max-width: 650px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 720px) {
+  .angkut-main .angkut-help {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 22px;
+  }
+}
+
+/* ---------- Rig ---------- */
+.angkut-rig {
+  position: relative;
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 14px 16px 16px;
+  border-radius: 22px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03) 0 1px,
+      transparent 1px 6px
+    ),
+    linear-gradient(180deg, #34353c 0%, #26272c 46%, #1d1e22 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -10px 26px rgba(0, 0, 0, 0.5),
+    0 28px 54px -24px rgba(0, 0, 0, 0.95),
+    0 10px 22px rgba(0, 0, 0, 0.4);
+}
+
+.angkut-rig::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 18px;
+  right: 18px;
+  height: 5px;
+  border-radius: 0 0 4px 4px;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--angkut-amber) 0 9px,
+    #201a12 9px 18px
+  );
+  opacity: 0.85;
+}
+
+.angkut-rig__bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 4px 0;
+}
+
+.angkut-brand span {
+  display: block;
+  color: var(--angkut-ink);
+  font-family: var(--font-pixel);
+  font-size: 15px;
+  letter-spacing: 3px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+}
+
+.angkut-brand em {
+  display: block;
+  margin-top: 4px;
+  color: var(--angkut-faint);
+  font-family: var(--font-mono);
+  font-size: 7px;
+  font-style: normal;
+  letter-spacing: 1.8px;
+}
+
+.angkut-rig__lights {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.angkut-led {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #4a463c;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.angkut-led.is-on {
+  background: var(--angkut-mint);
+  box-shadow:
+    0 0 0 3px rgba(127, 224, 196, 0.16),
+    0 0 10px var(--angkut-mint);
+}
+
+.angkut-mute {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--angkut-ink);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.angkut-mute.is-muted {
+  opacity: 0.55;
+}
+
+/* ---------- Screen ---------- */
+.angkut-screen {
+  position: relative;
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #0c0b0a, #171614);
+  box-shadow:
+    inset 0 3px 10px rgba(0, 0, 0, 0.9),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.angkut-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 5px;
+  background: #8fc3d8;
+}
+
+.angkut-glare {
+  position: absolute;
+  inset: 8px;
+  border-radius: 5px;
+  pointer-events: none;
+  background: linear-gradient(
+    152deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    transparent 34%
+  );
+  mix-blend-mode: screen;
+}
+
+/* Covers show the truck parked at the start line; the HUD would only be noise
+   underneath them. */
+.angkut-screen.is-idle .angkut-hud,
+.angkut-screen.is-idle .angkut-gauges {
+  opacity: 0;
+}
+
+/* ---------- HUD over the canvas ---------- */
+.angkut-hud {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  left: 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.angkut-hud__cluster {
+  display: flex;
+  gap: 6px;
+}
+
+.angkut-hud__cluster--right {
+  margin-left: auto;
+}
+
+.angkut-chip {
+  position: relative;
+  min-width: 64px;
+  padding: 4px 7px 6px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  background: rgba(12, 12, 12, 0.52);
+  backdrop-filter: blur(3px);
+}
+
+.angkut-chip span {
+  display: block;
+  color: rgba(255, 255, 255, 0.62);
+  font-family: var(--font-mono);
+  font-size: 6.5px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.angkut-chip b {
+  display: block;
+  margin-top: 2px;
+  color: #fff6df;
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.angkut-chip__bar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.angkut-chip__bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--angkut-amber);
+  transform: scaleX(var(--fill, 0));
+  transform-origin: left center;
+  transition: transform 0.2s linear;
+}
+
+.angkut-chip--target {
+  min-width: 46px;
+}
+
+/* ---------- Gauges under the canvas ---------- */
+.angkut-gauges {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.angkut-fuel,
+.angkut-load {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  background: rgba(12, 12, 12, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+.angkut-fuel span,
+.angkut-load span {
+  color: rgba(255, 255, 255, 0.62);
+  font-family: var(--font-mono);
+  font-size: 6.5px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.angkut-fuel i,
+.angkut-load i {
+  display: block;
+  width: 52px;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.angkut-fuel b,
+.angkut-load b {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7fe0c4, #f2b441);
+  transition: width 0.25s linear;
+}
+
+.angkut-load em {
+  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--font-mono);
+  font-size: 6px;
+  font-style: normal;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.angkut-load.is-mid b {
+  background: linear-gradient(90deg, #f2b441, #e8892d);
+}
+
+.angkut-load.is-high b {
+  background: linear-gradient(90deg, #e8892d, #d9534b);
+}
+
+.angkut-load.is-high em {
+  color: #ffb38c;
+}
+
+/* ---------- Covers ---------- */
+.angkut-cover {
+  position: absolute;
+  inset: 8px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: clamp(12px, 2.6vw, 26px);
+  border-radius: 5px;
+  background: radial-gradient(
+    ellipse 82% 72% at 50% 46%,
+    rgba(11, 9, 7, 0.9) 0%,
+    rgba(11, 9, 7, 0.76) 54%,
+    rgba(11, 9, 7, 0.32) 100%
+  );
+  text-align: center;
+  animation: angkut-fade 0.22s ease-out both;
+}
+
+.angkut-cover__kicker,
+.angkut-cover__title,
+.angkut-cover__cargo,
+.angkut-cover__text,
+.angkut-cover__note {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+}
+
+/* The summary is read, not looked through: keep the world behind it quiet. */
+.angkut-cover--summary {
+  background: radial-gradient(
+    ellipse 88% 80% at 50% 50%,
+    rgba(10, 8, 6, 0.95) 0%,
+    rgba(10, 8, 6, 0.9) 58%,
+    rgba(10, 8, 6, 0.62) 100%
+  );
+}
+
+.angkut-cover__kicker {
+  margin: 0;
+  color: var(--angkut-amber);
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.angkut-cover__title {
+  margin: 2px 0 0;
+  color: #fff6df;
+  font-family: var(--font-pixel);
+  font-size: clamp(12px, 1.9vw, 16px);
+  line-height: 1.7;
+  letter-spacing: 1px;
+}
+
+.angkut-cover__cargo {
+  margin: 0;
+  color: var(--angkut-ink);
+  font-size: 12px;
+}
+
+.angkut-cover__cargo span {
+  margin-right: 5px;
+  color: var(--angkut-faint);
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+
+.angkut-cover__text {
+  max-width: 44ch;
+  margin: 0;
+  color: var(--angkut-dim);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.angkut-cover__note {
+  max-width: 46ch;
+  margin: 2px 0 0;
+  color: var(--angkut-faint);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.angkut-cover__cta {
+  margin-top: 6px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--angkut-amber);
+  color: #2a1a08;
+  font-family: var(--font-pixel);
+  font-size: 8.5px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow:
+    0 4px 0 var(--angkut-amber-deep),
+    0 10px 20px rgba(0, 0, 0, 0.45);
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease;
+}
+
+.angkut-cover__cta:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--angkut-amber-deep);
+}
+
+.angkut-cover__cta--ghost {
+  background: transparent;
+  color: var(--angkut-ink);
+  box-shadow: inset 0 0 0 1px rgba(244, 234, 214, 0.4);
+}
+
+.angkut-cover__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.angkut-cover__record {
+  margin: 0;
+  color: var(--angkut-mint);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+
+.angkut-summary {
+  display: flex;
+  gap: clamp(12px, 3vw, 26px);
+  margin: 6px 0 0;
+}
+
+.angkut-summary div {
+  text-align: center;
+}
+
+.angkut-summary dt {
+  color: var(--angkut-faint);
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.angkut-summary dd {
+  margin: 3px 0 0;
+  color: #fff6df;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+}
+
+/* ---------- Pedals ---------- */
+.angkut-pedals {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.angkut-pedal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 62px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 12px;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    transform 0.06s ease,
+    box-shadow 0.06s ease,
+    filter 0.12s ease;
+}
+
+.angkut-pedal em {
+  font-size: 9px;
+  font-style: normal;
+  opacity: 0.65;
+}
+
+.angkut-pedal--gas {
+  background: linear-gradient(180deg, #f6c65c, #d99421);
+  color: #2b1b06;
+  box-shadow:
+    0 5px 0 #a06813,
+    0 10px 18px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.angkut-pedal--brake {
+  background: linear-gradient(180deg, #e0705f, #b8433a);
+  color: #2a0b07;
+  box-shadow:
+    0 5px 0 #7f2c25,
+    0 10px 18px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.angkut-pedal:active:not(:disabled) {
+  transform: translateY(4px);
+  filter: brightness(0.96);
+}
+
+.angkut-pedal--gas:active:not(:disabled) {
+  box-shadow: 0 1px 0 #a06813;
+}
+
+.angkut-pedal--brake:active:not(:disabled) {
+  box-shadow: 0 1px 0 #7f2c25;
+}
+
+.angkut-pedal:disabled {
+  cursor: not-allowed;
+}
+
+.angkut-pedal.is-idle {
+  opacity: 0.5;
+  filter: saturate(0.5);
+}
+
+.angkut-plate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 76px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.34);
+}
+
+/* Pin the pedals to their own columns so hiding the plate between them never
+   leaves the gas pedal sitting in the middle track. */
+.angkut-pedal--brake {
+  grid-column: 1;
+}
+
+.angkut-pedal--gas {
+  grid-column: 3;
+}
+
+.angkut-plate {
+  grid-column: 2;
+}
+
+.angkut-plate span {
+  color: var(--angkut-faint);
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: 1.6px;
+}
+
+.angkut-plate b {
+  color: var(--angkut-amber);
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+.angkut-keys-hint {
+  margin: 12px 0 0;
+  color: var(--angkut-faint);
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.8px;
+  text-align: center;
+}
+
+/* ---------- Side cards ---------- */
+.angkut-card {
+  padding: 16px;
+  border: 1px solid var(--angkut-line);
+  border-radius: 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.015)
+  );
+  box-shadow: 0 18px 34px -26px rgba(0, 0, 0, 0.9);
+}
+
+.angkut-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.angkut-card__head h2 {
+  margin: 0;
+  color: var(--angkut-amber);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1.8px;
+}
+
+.angkut-card__head span {
+  color: var(--angkut-faint);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.angkut-card__note {
+  margin: 14px 0 0;
+  color: var(--angkut-dim);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+/* ---------- Route picker ---------- */
+.angkut-routes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.angkut-route {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--angkut-ink);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.angkut-route:hover:not(:disabled) {
+  background: rgba(242, 180, 65, 0.12);
+  border-color: rgba(242, 180, 65, 0.3);
+}
+
+.angkut-route.is-active {
+  border-color: rgba(242, 180, 65, 0.55);
+  background: linear-gradient(
+    90deg,
+    rgba(242, 180, 65, 0.18),
+    rgba(242, 180, 65, 0.04)
+  );
+}
+
+.angkut-route.is-locked {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.angkut-route__no {
+  color: var(--angkut-faint);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+.angkut-route.is-active .angkut-route__no {
+  color: var(--angkut-amber);
+}
+
+.angkut-route__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.angkut-route__main b {
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.angkut-route__main em {
+  overflow: hidden;
+  color: var(--angkut-faint);
+  font-size: 10px;
+  font-style: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.angkut-route__meta {
+  color: var(--angkut-dim);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.angkut-route__meta b {
+  color: var(--angkut-mint);
+  font-weight: 500;
+  letter-spacing: 0.6px;
+}
+
+/* ---------- Cargo ---------- */
+.angkut-cargo {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+}
+
+.angkut-cargo__swatch {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border: 2px solid;
+  border-radius: 8px;
+  box-shadow: inset 0 -6px 10px rgba(0, 0, 0, 0.24);
+}
+
+.angkut-cargo__name {
+  margin: 0;
+  color: var(--angkut-ink);
+  font-family: var(--font-pixel);
+  font-size: 9.5px;
+  line-height: 1.7;
+}
+
+.angkut-cargo__trait {
+  margin: 6px 0 0;
+  color: var(--angkut-dim);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.angkut-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--angkut-line);
+}
+
+.angkut-facts dt {
+  color: var(--angkut-faint);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.angkut-facts dd {
+  margin: 3px 0 0;
+  color: var(--angkut-ink);
+  font-family: var(--font-pixel);
+  font-size: 9px;
+}
+
+/* ---------- Garage ---------- */
+.angkut-garage {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.angkut-garage__line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.angkut-garage__line b {
+  color: var(--angkut-ink);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1.6px;
+}
+
+.angkut-garage__line span {
+  color: var(--angkut-faint);
+  font-size: 10.5px;
+}
+
+.angkut-garage__pips {
+  display: flex;
+  gap: 4px;
+  margin: 6px 0 7px;
+}
+
+.angkut-garage__pips i {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.angkut-garage__pips i.is-on {
+  background: var(--angkut-amber);
+  box-shadow: 0 0 8px rgba(242, 180, 65, 0.4);
+}
+
+.angkut-garage__buy {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid rgba(242, 180, 65, 0.35);
+  border-radius: 8px;
+  background: rgba(242, 180, 65, 0.12);
+  color: var(--angkut-amber);
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.angkut-garage__buy:hover:not(:disabled) {
+  background: var(--angkut-amber);
+  color: #2a1a08;
+}
+
+.angkut-garage__buy:disabled {
+  border-color: var(--angkut-line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--angkut-faint);
+  cursor: not-allowed;
+}
+
+/* ---------- Help ---------- */
+.angkut-help {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.angkut-help li {
+  display: flex;
+  gap: 8px;
+  color: var(--angkut-dim);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.angkut-help li span {
+  color: var(--angkut-amber);
+}
+
+/* ---------- Manual + footer ---------- */
+.angkut-notes {
+  margin-top: clamp(34px, 6vw, 64px);
+  padding-top: 22px;
+  border-top: 1px solid var(--angkut-line);
+}
+
+.angkut-notes__head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.angkut-notes__head p {
+  margin: 0;
+  color: var(--angkut-amber);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+
+.angkut-notes__head h2 {
+  margin: 0;
+  color: var(--angkut-ink);
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.angkut-notes ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 26px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.angkut-notes li {
+  display: flex;
+  gap: 9px;
+  color: var(--angkut-dim);
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+
+.angkut-notes li span {
+  color: var(--angkut-amber);
+}
+
+.angkut-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  margin-top: 26px;
+  padding-top: 16px;
+  border-top: 1px solid var(--angkut-line);
+  color: var(--angkut-faint);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.angkut-footer p {
+  margin: 0;
+}
+
+.angkut-footer a {
+  margin-left: auto;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(242, 180, 65, 0.32);
+  color: var(--angkut-amber);
+  text-decoration: none;
+}
+
+.angkut-footer a:hover {
+  color: var(--angkut-ink);
+}
+
+@keyframes angkut-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1000px) {
+  .angkut-layout {
+    grid-template-columns: minmax(0, 660px);
+  }
+
+  .angkut-side {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .angkut-hero__blurb {
+    font-size: 13.5px;
+  }
+
+  .angkut-side {
+    grid-template-columns: 1fr;
+  }
+
+  .angkut-notes ul {
+    grid-template-columns: 1fr;
+  }
+
+  .angkut-rig {
+    padding: 11px 10px 12px;
+    border-radius: 18px;
+  }
+
+  .angkut-rig::before {
+    left: 12px;
+    right: 12px;
+    height: 4px;
+    background: repeating-linear-gradient(
+      135deg,
+      var(--angkut-amber) 0 7px,
+      #201a12 7px 14px
+    );
+  }
+
+  .angkut-brand span {
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  .angkut-brand em {
+    font-size: 6px;
+    letter-spacing: 1.2px;
+  }
+
+  .angkut-hud {
+    top: 13px;
+    right: 13px;
+    left: 13px;
+  }
+
+  .angkut-chip {
+    min-width: 52px;
+    padding: 3px 5px 5px;
+  }
+
+  .angkut-chip span {
+    font-size: 5.5px;
+    letter-spacing: 0.8px;
+  }
+
+  .angkut-chip b {
+    font-size: 7.5px;
+  }
+
+  .angkut-chip--target {
+    display: none;
+  }
+
+  .angkut-gauges {
+    right: 13px;
+    bottom: 13px;
+    left: 13px;
+    gap: 6px;
+  }
+
+  .angkut-fuel i,
+  .angkut-load i {
+    width: 34px;
+  }
+
+  .angkut-load em {
+    display: none;
+  }
+
+  .angkut-pedal {
+    min-height: 54px;
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+
+  .angkut-plate {
+    min-width: 58px;
+    padding: 5px 6px;
+  }
+
+  .angkut-cover {
+    gap: 4px;
+    padding: 10px 12px;
+  }
+
+  .angkut-cover__title {
+    font-size: 11px;
+  }
+
+  .angkut-cover__text,
+  .angkut-cover__note {
+    display: none;
+  }
+
+  .angkut-cover__cargo {
+    font-size: 10.5px;
+  }
+
+  .angkut-cover__cta {
+    padding: 8px 13px;
+    font-size: 7.5px;
+  }
+
+  .angkut-keys-hint {
+    font-size: 7.5px;
+  }
+}
+
+@media (max-width: 430px) {
+  .angkut-chip--target,
+  .angkut-chip__bar {
+    display: none;
+  }
+
+  .angkut-summary {
+    gap: 12px;
+  }
+
+  .angkut-summary dd {
+    font-size: 9px;
+  }
+
+  .angkut-plate {
+    display: none;
+  }
+
+  .angkut-page .site-header__title em {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .angkut-cover {
+    animation: none;
+  }
+}

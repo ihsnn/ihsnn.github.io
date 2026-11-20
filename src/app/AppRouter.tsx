@@ -18,6 +18,8 @@ const RakCeritaPage = lazy(() => import('../features/rakcerita/RakCeritaPage'))
 const PhotoboothPage = lazy(() => import('../features/photobooth/PhotoboothPage'))
 const PiaraPage = lazy(() => import('../features/piara/PiaraPage'))
 const WarkopPage = lazy(() => import('../features/warkop/WarkopPage'))
+const TodoPage = lazy(() => import('../features/todo/TodoPage'))
+const AngkutPage = lazy(() => import('../features/angkut/AngkutPage'))
 
 function RouteFallback() {
   return (
@@ -94,6 +96,24 @@ export default function AppRouter() {
           element={
             <Suspense fallback={<RouteFallback />}>
               <WarkopPage />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path={ROUTES.todo}
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <TodoPage />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path={ROUTES.angkut}
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <AngkutPage />
             </Suspense>
           }
         />

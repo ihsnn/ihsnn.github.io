@@ -139,4 +139,32 @@ export const CARTRIDGES: readonly Cartridge[] = [
     tags: ['Tiny sim', 'Canvas', 'Web audio'],
     year: '2026',
   },
+  {
+    id: 'todo',
+    catalogNo: '09',
+    title: 'TO-DO LIST',
+    tagline:
+      'A 1999 pocket organizer for today’s tasks: type it, tick it, bank the XP and keep the streak alive.',
+    route: ROUTES.todo,
+    color: '#3b453c',
+    colorDark: '#131a14',
+    labelColor: '#ffc45b',
+    code: 'DMG-TD-USA',
+    tags: ['Task list', 'Keyboard', 'localStorage'],
+    year: '2026',
+  },
+  {
+    id: 'angkut',
+    catalogNo: '10',
+    title: 'ANGKUT',
+    tagline:
+      'A big dump truck on six mountain roads: sand, logs, rock, gas bottles, livestock and cement each change the weight, the grip and the tilt.',
+    route: ROUTES.angkut,
+    color: '#c2603a',
+    colorDark: '#5c2410',
+    labelColor: '#ffe0a8',
+    code: 'DMG-AK-USA',
+    tags: ['Truck physics', '6 loads', 'Canvas'],
+    year: '2026',
+  },
 ]

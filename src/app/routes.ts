@@ -19,6 +19,10 @@ export const ROUTES = {
   piara: '/piara',
   /** Warkop counter: four seats, five dishes, ninety seconds per day. */
   warkop: '/warkop',
+  /** Pocket organizer to-do list: XP, streaks and a local task list. */
+  todo: '/todo',
+  /** Hill-climb hauler: six routes, six loads, two pedals. */
+  angkut: '/angkut',
   /** Boot screen of the console; every other scene hangs off it. */
   gameboy: '/gameboy',
 } as const
