@@ -473,6 +473,112 @@ function AngkutArt() {
   )
 }
 
+/** A picture card and a loud speaker: the listening cartridge. */
+function SuaraArt() {
+  return (
+    <Art>
+      <g transform="rotate(-4 28 28)">
+        <rect
+          x="9"
+          y="10"
+          width="38"
+          height="36"
+          rx="3"
+          fill={PAPER}
+          stroke={INK}
+          strokeWidth="1.2"
+        />
+        <rect x="12" y="13" width="32" height="24" fill="#bfe3c9" />
+        <ellipse cx="28" cy="26" rx="8" ry="7" fill="#f7f4ee" stroke={INK} strokeWidth="0.9" />
+        <ellipse cx="20" cy="22" rx="2.6" ry="1.7" fill="#f7f4ee" stroke={INK} strokeWidth="0.7" />
+        <ellipse cx="36" cy="22" rx="2.6" ry="1.7" fill="#f7f4ee" stroke={INK} strokeWidth="0.7" />
+        <ellipse cx="22.5" cy="29.5" rx="4.4" ry="3.2" fill="#f2b8b8" />
+        <circle cx="24" cy="25" r="0.9" fill={INK} />
+        <circle cx="32" cy="25" r="0.9" fill={INK} />
+        <rect x="12" y="40" width="16" height="2" fill={INK} opacity="0.55" />
+        <rect x="30" y="40" width="8" height="2" fill={INK} opacity="0.3" />
+      </g>
+
+      <path
+        d="M52 24h5l8-6v20l-8-6h-5z"
+        fill="#e4572e"
+        stroke={INK}
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M70 21a10 10 0 0 1 0 14"
+        fill="none"
+        stroke="#e4572e"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M74.5 16.5a16 16 0 0 1 0 23"
+        fill="none"
+        stroke="#e4572e"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+
+      <rect x="80" y="38" width="4" height="4" fill={INK} opacity="0.8" />
+      <rect x="88" y="38" width="4" height="4" fill={INK} opacity="0.8" />
+      <rect x="84" y="42" width="4" height="4" fill={INK} opacity="0.8" />
+      <rect x="80" y="46" width="4" height="4" fill={INK} opacity="0.8" />
+
+      <path d="M78 9l1 2.8 2.8 1-2.8 1L78 17l-1-2.2-2.8-1 2.8-1z" fill="#f2b441" />
+    </Art>
+  )
+}
+
+/** Sunset hills, bunting flags and a torch: the festival island. */
+function PekanArt() {
+  const flags = ['#c94f45', '#e8b44c', '#f4ead2', '#5f9e4a', '#c94f45', '#e8b44c']
+  return (
+    <Art>
+      <rect
+        x="4"
+        y="5"
+        width="88"
+        height="46"
+        rx="3"
+        fill="#1f4a3d"
+        stroke={INK}
+        strokeWidth="1.2"
+      />
+      <circle cx="70" cy="20" r="8" fill="#e8b44c" />
+      <path d="M4 40c12-9 21-7 30-1s17 5 26-2 16-6 32 1v13H4z" fill="#16382d" />
+      <path d="M4 36c10-6 19-4 27 1s17 4 26-1 16-4 35 1" fill="none" stroke="#2f6b55" strokeWidth="1.6" />
+
+      <path d="M6 10c15 6 32 7 44 3s27-3 40 1" fill="none" stroke="#f4ead2" strokeWidth="0.8" opacity="0.75" />
+      {flags.map((color, index) => {
+        const x = 9 + index * 14
+        const y = 12 + Math.sin((index / 5) * Math.PI) * 5
+        return (
+          <path
+            key={color + index}
+            d={`M${x} ${y}h7l-3.5 7z`}
+            fill={color}
+            stroke={INK}
+            strokeWidth="0.5"
+          />
+        )
+      })}
+
+      <circle cx="20" cy="32" r="8" fill={PAPER} stroke={INK} strokeWidth="1" />
+      <circle cx="20" cy="32" r="5.5" fill="#c94f45" />
+      <circle cx="20" cy="32" r="3" fill={PAPER} />
+      <circle cx="20" cy="32" r="1.2" fill={INK} />
+
+      <rect x="80" y="30" width="2.4" height="15" fill="#6b4a2f" />
+      <path d="M81 30c-3-4-1-7 0-9 2 3 4 5 3 8z" fill="#e8b44c" />
+      <path d="M81 29c-1.6-2.4-.6-4 0-5.4 1.2 1.8 2.4 3 1.8 4.8z" fill="#fff3d6" />
+      <rect x="4" y="46" width="88" height="5" fill="#0d2a22" />
+    </Art>
+  )
+}
+
 /** Fallback for a cartridge that has not had its label art drawn yet. */
 function GenericPackArt() {
   return (
@@ -519,6 +625,10 @@ export default function CartridgeArt({ id }: { id: string }) {
       return <TodoArt />
     case 'angkut':
       return <AngkutArt />
+    case 'suara':
+      return <SuaraArt />
+    case 'pekan':
+      return <PekanArt />
     default:
       return <GenericPackArt />
   }

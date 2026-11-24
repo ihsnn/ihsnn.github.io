@@ -20,6 +20,8 @@ const PiaraPage = lazy(() => import('../features/piara/PiaraPage'))
 const WarkopPage = lazy(() => import('../features/warkop/WarkopPage'))
 const TodoPage = lazy(() => import('../features/todo/TodoPage'))
 const AngkutPage = lazy(() => import('../features/angkut/AngkutPage'))
+const SuaraPage = lazy(() => import('../features/suara/SuaraPage'))
+const PekanPage = lazy(() => import('../features/pekan/PekanPage'))
 
 function RouteFallback() {
   return (
@@ -114,6 +116,24 @@ export default function AppRouter() {
           element={
             <Suspense fallback={<RouteFallback />}>
               <AngkutPage />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path={ROUTES.suara}
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <SuaraPage />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path={ROUTES.pekan}
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <PekanPage />
             </Suspense>
           }
         />

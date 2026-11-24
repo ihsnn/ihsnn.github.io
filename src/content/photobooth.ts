@@ -50,6 +50,8 @@ export type LayoutStyle =
   | 'gamebox'
   | 'cassetteBox'
   | 'vandals'
+  | 'instagram'
+  | 'passportCard'
 
 /** The extra texture layered under a layout's notes. */
 export type SoundTexture =
@@ -912,6 +914,47 @@ export const STRIP_LAYOUTS: readonly StripLayout[] = [
       texture: 'noise',
     },
   },
+  {
+    id: 'instagram-post',
+    name: 'Instagram Post',
+    category: '1:1 social',
+    blurb:
+      'A post ready to screenshot: avatar, header, the photo, like and comment icons, caption and timestamp.',
+    slots: 1,
+    width: 900,
+    height: 940,
+    style: 'instagram',
+    shine: 'gloss',
+    date: true,
+    motion: 'drift',
+    theme: { base: '#f7f3ee', glow: '#e1306c', ink: '#201a1c', accent: '#833ab4' },
+    sound: {
+      select: [659, 880],
+      done: [659, 880, 1046],
+      wave: 'sine',
+      texture: 'sparkle',
+    },
+  },
+  {
+    id: 'passport-card',
+    name: 'Passport Card',
+    category: 'Identity page',
+    blurb:
+      'A single identity page: signature strip, fine print, barcode, photo, data fields and a two-line MRZ.',
+    slots: 1,
+    width: 840,
+    height: 1160,
+    style: 'passportCard',
+    shine: 'paper',
+    date: true,
+    theme: { base: '#1f4568', glow: '#7fa3c0', ink: '#f3f0e6', accent: '#c9a227' },
+    sound: {
+      select: [392, 494],
+      done: [392, 494, 587],
+      wave: 'triangle',
+      texture: 'stamp',
+    },
+  },
 ]
 
 export const DEFAULT_LAYOUT_ID = 'trading-card'
@@ -983,6 +1026,8 @@ export const STRIP_CROP_ASPECTS: Readonly<Record<string, readonly number[]>> = {
   'game-box': [0.84, 1.5],
   'cassette-box': [1],
   'vandal-wall': [1.25],
+  'instagram-post': [1.6],
+  'passport-card': [0.75],
 }
 
 export function cropAspectFor(layout: StripLayout, slot: number): number {
@@ -1122,9 +1167,9 @@ export const PHOTOBOOTH_COPY = {
   heroLineTwo: 'SNAP.',
   heroLineThree: 'DOWNLOAD.',
   heroBlurb:
-    'Thirty-nine frames, one camera, zero uploads. Pick a template, take one or two shots, reframe them, set the date and a line of text, choose a backdrop — then save a PNG or a short looping video straight to your device.',
+    'Forty-one frames, one camera, zero uploads. Pick a template, take one or two shots, reframe them, set the date and a line of text, choose a backdrop — then save a PNG or a short looping video straight to your device.',
   badges: [
-    { value: '39', label: 'strip designs' },
+    { value: '41', label: 'strip designs' },
     { value: '1–2', label: 'photos per strip' },
     { value: '0', label: 'server uploads' },
   ],
@@ -1256,7 +1301,7 @@ export const PHOTOBOOTH_COPY = {
     'Privacy: no photo, camera frame or file is uploaded. This page runs entirely on your device.',
   footer: 'Pocket photo booth · canvas, WebAudio, no server',
   footerShelf: '← Back to the shelf',
-  sourceNote: 'Built with Canvas 2D · 39 layouts · 0 backend',
+  sourceNote: 'Built with Canvas 2D · 41 layouts · 0 backend',
   backToShelf: ROUTES.home,
   downloadPrefix: 'photobooth',
 } as const

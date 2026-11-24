@@ -167,4 +167,32 @@ export const CARTRIDGES: readonly Cartridge[] = [
     tags: ['Truck physics', '6 loads', 'Canvas'],
     year: '2026',
   },
+  {
+    id: 'suara',
+    catalogNo: '11',
+    title: 'TELINGA EMAS',
+    tagline:
+      'A listening game: forty real recordings of animals, wheels, rooms and weather, with 8-bit drawings or real photographs, giant speaker buttons and a full-screen view.',
+    route: ROUTES.suara,
+    color: '#e4572e',
+    colorDark: '#7d2a10',
+    labelColor: '#fff3e0',
+    code: 'DMG-TE-USA',
+    tags: ['40 sounds', 'Real audio', 'Pixel & photo'],
+    year: '2026',
+  },
+  {
+    id: 'pekan',
+    catalogNo: '12',
+    title: 'PEKAN RAYA',
+    tagline:
+      'A folk-sports island: walk the village and the rice fields, challenge seven champions, collect their scrolls, then light the torch at the summit.',
+    route: ROUTES.pekan,
+    color: '#1f4a3d',
+    colorDark: '#0d2a22',
+    labelColor: '#e8b44c',
+    code: 'DMG-PK-USA',
+    tags: ['Island map', '7 branches', 'Canvas'],
+    year: '2026',
+  },
 ]

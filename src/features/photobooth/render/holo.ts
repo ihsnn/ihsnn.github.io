@@ -2,6 +2,7 @@ import {
   archPath,
   barcode,
   blobPath,
+  circlePath,
   drawText,
   FONT,
   fillRound,
@@ -19,6 +20,7 @@ import {
   sparkle,
   star,
   strokeRound,
+  wrapText,
   type PhotoBitmap,
   type Scene,
 } from '../art'
@@ -1213,6 +1215,184 @@ export function paintContact({ ctx, w, h, photos, caption, date }: Scene) {
   holo(ctx, 0, 0, w, h, { opacity: 0.06, seed: 9, sparkles: 6 })
 }
 
+/* ------------------------------------------------------------------ */
+/* 40 · Instagram post                                                 */
+/* ------------------------------------------------------------------ */
+
+export function paintInstagram({ ctx, w, h, photos, caption, date }: Scene) {
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, w, h)
+
+  // Header: gradient avatar ring, handle, verified tick, location, menu.
+  const avatar = { x: 46, y: 46, r: 25 }
+  const ring = ['#feda75', '#fa7e1e', '#d62976', '#962fbf', '#4f5bd5']
+  ctx.save()
+  ctx.translate(avatar.x, avatar.y)
+  ring.forEach((color, index) => {
+    ctx.beginPath()
+    ctx.arc(0, 0, 30, (index / ring.length) * Math.PI * 2 - Math.PI / 2, ((index + 1) / ring.length) * Math.PI * 2 - Math.PI / 2)
+    ctx.strokeStyle = color
+    ctx.lineWidth = 3
+    ctx.stroke()
+  })
+  ctx.restore()
+  ctx.save()
+  circlePath(ctx, avatar.x, avatar.y, 25)
+  ctx.clip()
+  photo(ctx, photos[0], avatar.x - 25, avatar.y - 25, 50, 50, {
+    label: 'YOU',
+    seed: 41,
+    placeholderBg: '#d9d2c4',
+    placeholderInk: '#6d6455',
+  })
+  ctx.restore()
+
+  const handle = 'photobooth06'
+  drawText(ctx, handle, 88, 40, {
+    size: 17,
+    weight: 700,
+    family: FONT.sans,
+    color: '#1d1d1f',
+    tracking: 0.1,
+  })
+  const handleWidth = ctx.measureText(handle).width
+  ctx.save()
+  ctx.translate(98 + handleWidth, 34)
+  circlePath(ctx, 0, 0, 8)
+  ctx.fillStyle = '#3897f0'
+  ctx.fill()
+  ctx.strokeStyle = '#ffffff'
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.moveTo(-3.4, 0.4)
+  ctx.lineTo(-1, 3)
+  ctx.lineTo(3.6, -2.4)
+  ctx.stroke()
+  ctx.restore()
+
+  drawText(ctx, 'Memory Lane · Photo Booth', 88, 64, {
+    size: 11,
+    family: FONT.sans,
+    color: '#6e6e73',
+    tracking: 0.1,
+  })
+  drawText(ctx, '•••', w - 44, 52, {
+    size: 18,
+    weight: 700,
+    family: FONT.sans,
+    color: '#1d1d1f',
+    align: 'right',
+    tracking: 2,
+  })
+
+  // The post itself.
+  const photoTop = 92
+  const photoHeight = 560
+  photo(ctx, photos[0], 0, photoTop, w, photoHeight, {
+    label: 'PHOTO 1',
+    seed: 44,
+    placeholderBg: '#cfc8ba',
+    placeholderInk: '#6d6455',
+  })
+
+  // Action row.
+  const iconY = 690
+  ctx.save()
+  ctx.fillStyle = '#ed4956'
+  ctx.beginPath()
+  ctx.moveTo(40, iconY + 16)
+  ctx.bezierCurveTo(40, iconY + 8, 46, iconY, 54, iconY + 4)
+  ctx.bezierCurveTo(58, iconY + 6, 60, iconY + 10, 60, iconY + 13)
+  ctx.bezierCurveTo(60, iconY + 21, 52, iconY + 27, 40, iconY + 34)
+  ctx.bezierCurveTo(28, iconY + 27, 20, iconY + 21, 20, iconY + 13)
+  ctx.bezierCurveTo(20, iconY + 10, 22, iconY + 6, 26, iconY + 4)
+  ctx.bezierCurveTo(34, iconY, 40, iconY + 8, 40, iconY + 16)
+  ctx.fill()
+  ctx.restore()
+
+  ctx.save()
+  ctx.strokeStyle = '#1d1d1f'
+  ctx.lineWidth = 2.2
+  ctx.lineJoin = 'round'
+  ctx.beginPath()
+  ctx.moveTo(102, iconY)
+  ctx.quadraticCurveTo(102, iconY - 6, 108, iconY - 6)
+  ctx.lineTo(132, iconY - 6)
+  ctx.quadraticCurveTo(138, iconY - 6, 138, iconY)
+  ctx.lineTo(138, iconY + 18)
+  ctx.quadraticCurveTo(138, iconY + 24, 132, iconY + 24)
+  ctx.lineTo(116, iconY + 24)
+  ctx.lineTo(106, iconY + 32)
+  ctx.lineTo(106, iconY + 24)
+  ctx.quadraticCurveTo(102, iconY + 24, 102, iconY + 18)
+  ctx.closePath()
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(172, iconY - 4)
+  ctx.lineTo(196, iconY - 2)
+  ctx.lineTo(182, iconY + 16)
+  ctx.lineTo(188, iconY + 30)
+  ctx.lineTo(172, iconY + 20)
+  ctx.closePath()
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(w - 40, iconY - 6)
+  ctx.lineTo(w - 40, iconY + 32)
+  ctx.lineTo(w - 56, iconY + 20)
+  ctx.lineTo(w - 72, iconY + 32)
+  ctx.lineTo(w - 72, iconY - 6)
+  ctx.closePath()
+  ctx.stroke()
+  ctx.restore()
+
+  drawText(ctx, '1,284 likes', 40, 756, {
+    size: 15,
+    weight: 700,
+    family: FONT.sans,
+    color: '#1d1d1f',
+  })
+
+  drawText(ctx, handle, 40, 792, {
+    size: 14,
+    weight: 700,
+    family: FONT.sans,
+    color: '#1d1d1f',
+  })
+  const lines = wrapText(ctx, caption || 'a good afternoon, kept.', w - 80, {
+    size: 14,
+    family: FONT.sans,
+    weight: 400,
+  })
+  lines.slice(0, 2).forEach((line, index) => {
+    drawText(ctx, line, 40, 816 + index * 20, {
+      size: 14,
+      family: FONT.sans,
+      color: '#262626',
+      maxWidth: w - 80,
+    })
+  })
+  drawText(ctx, 'View all 48 comments', 40, 862, {
+    size: 13,
+    family: FONT.sans,
+    color: '#8e8e93',
+  })
+  drawText(ctx, formatDate(date, 'long').toLowerCase(), 40, 891, {
+    size: 9.5,
+    family: FONT.sans,
+    color: '#8e8e93',
+    tracking: 1.2,
+  })
+  drawText(ctx, 'PHOTO BOOTH · 06', w - 40, 891, {
+    size: 9,
+    family: FONT.mono,
+    color: '#b0b0b6',
+    align: 'right',
+    tracking: 1.2,
+  })
+
+  gloss(ctx, 0, 0, w, h, { opacity: 0.05, angle: -0.5 })
+}
+
 /* Kept local so the brief's third required style has one obvious entry. */
 export const HOLO_PAINTERS = {
   poke: paintPoke,
@@ -1221,4 +1401,5 @@ export const HOLO_PAINTERS = {
   sticker: paintSticker,
   holo: paintHolo,
   contact: paintContact,
+  instagram: paintInstagram,
 }

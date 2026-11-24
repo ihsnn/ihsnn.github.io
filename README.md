@@ -1,7 +1,7 @@
 # IHSNN — playground
 
 A shelf of small browser toys, mostly nostalgic hardware rebuilt in React.
-Eight cartridges are plugged in today:
+Eleven cartridges are plugged in today:
 
 | Cartridge | Route | What it is |
 | --- | --- | --- |
@@ -13,6 +13,9 @@ Eight cartridges are plugged in today:
 | **PHOTOBOOTH** | `/photobooth` | Twenty-five photo-strip layouts drawn on canvas. Shoot or pick one or two photos, crop/reposition them, add a line of text, hear each template’s sound, and download the PNG — all on-device. |
 | **PIARA** | `/piara` | A pocket creature on a translucent keychain. Hatch and name it, then keep three needs up while real time passes; it grows through four stages and keeps one save slot in `localStorage`. |
 | **WARKOP** | `/warkop` | A beige cash register with four seats: cook five dishes on two burners, read the queue, and keep the tips coming for ninety seconds. |
+| **TO-DO LIST** | `/todo` | A 1999 pocket organizer: type tasks, tick them off, bank XP and keep the daily streak alive. |
+| **ANGKUT** | `/angkut` | A hill-climb hauler with six roads and six loads whose mass, height and grip change the physics of every run. |
+| **TELINGA EMAS** | `/suara` | A listening game: forty real recordings of animals, wheels, rooms and weather, shown as 8-bit drawings or real photographs, with giant speaker buttons, a quiz and a full-screen viewer. Sounds and photos are CC-licensed and credited in the viewer. |
 
 React 18 · TypeScript (strict) · Vite 5 · Recoil · React Router 6 · Tailwind + hand-written CSS.
 
@@ -39,6 +42,9 @@ Every URL is declared once in [`src/app/routes.ts`](src/app/routes.ts):
 /photobooth           Photo Booth (25 strips)
 /piara                PIARA, the pocket creature
 /warkop               WARKOP, the ninety-second counter
+/todo                 TASK-9 pocket organizer
+/angkut               ANGKUT, the hill-climb hauler
+/suara                TELINGA EMAS, the listening game
 /gameboy              console boot screen
 /gameboy/menu         console menu
 /gameboy/start        intro scene
@@ -70,6 +76,9 @@ src/
     photobooth/   strip catalogue, canvas painters, camera/photo hook, booth UI
     piara/        real-time pet simulation, 160×120 canvas renderer, keychain shell, save
     warkop/       counter simulation engine, 320×240 canvas renderer, register UI, save
+    todo/         pocket organizer: task rules, undo/autosave hook, LCD UI
+    angkut/       truck physics, seeded terrain, 480×270 renderer, garage, save
+    suara/        sound catalogue UI, WebAudio recipes, pixel renderer, quiz, viewer
   lib/            assets registry, scroll helpers, fit-to-viewport hook
   state/          Recoil atoms (user state only)
   styles/         design tokens + base layer
@@ -163,6 +172,19 @@ The story bible, cast sheet and chapter worksheets live in [`story/`](story/READ
 | Close a day early | The red `TUTUP` button on the machine |
 | Mute | The speaker button on the machine; the flag persists in `ihsnn:warkop:muted` |
 | Best day | Saved automatically under `ihsnn:warkop:best` |
+
+**TELINGA EMAS**
+
+| Action | Keyboard / pointer |
+| --- | --- |
+| Hear a sound | The round speaker button on any card, or the big `Dengarkan` bar |
+| Enlarge a picture | Tap/click the picture, or the ⤢ badge on it |
+| Switch picture mode | The `Piksel` / `Real` switch (also inside the full-screen view) |
+| Filter the shelf | The category chips: Semua, Hewan, Kendaraan, Rumah, Alam |
+| Quiz | The `Tebak` tab; hear the sound, then pick one of four pictures |
+| Full-screen keys | `Esc` closes, `←` `→` step through pictures, `Tab` stays inside |
+| Mute | The speaker button in the device bar; the flag persists in `ihsnn:suara:muted` |
+| Best run | Saved automatically under `ihsnn:suara:best` |
 
 ## Building for the web
 

@@ -5,6 +5,7 @@ import {
   circlePath,
   clamp,
   dateParts,
+  drawParagraph,
   drawText,
   formatDate,
   FONT,
@@ -4046,6 +4047,292 @@ export function paintVandals({ ctx, w, h, photos, caption }: Scene) {
 }
 
 /* A tiny exported map keeps the render index declarative. */
+/* ------------------------------------------------------------------ */
+/* 41 · Passport identity card                                         */
+/* ------------------------------------------------------------------ */
+
+export function paintPassportCard({ ctx, w, h, photos, caption, date }: Scene) {
+  const parts = dateParts(date)
+  const expiryYear = Number(parts.year) + 10
+  const issue = formatDate(date, 'long')
+  const expiry = formatDate(`${expiryYear}-${parts.monthNumber}-${parts.day}`, 'long')
+  const given = (caption || 'JOHN').toUpperCase()
+  const surname = 'DOE'
+  const passNo = 'P12345678'
+  const ink = '#2b3a4a'
+  const muted = '#6d7a85'
+  const paper = '#f3f0e6'
+
+  // Blue card shell with a light inner bevel.
+  fillRound(ctx, 0, 0, w, h, 26, '#1b3f5f')
+  ctx.fillStyle = linear(ctx, 0, 0, w, h, [
+    [0, '#265275'],
+    [0.5, '#1b3f5f'],
+    [1, '#122d45'],
+  ])
+  roundPath(ctx, 0, 0, w, h, 26)
+  ctx.fill()
+  strokeRound(ctx, 9, 9, w - 18, h - 18, 20, 'rgba(190, 216, 232, 0.5)', 1.5)
+  fillRound(ctx, 16, 16, w - 32, h - 32, 18, paper)
+  grainDots(ctx, 16, 16, w - 32, h - 32, 37, 'rgba(90, 100, 100, 0.1)', 0.45)
+
+  // Security perforations down both edges of the top half.
+  for (let y = 54; y < 448; y += 13) {
+    for (const x of [40, 48, w - 48, w - 40]) {
+      ctx.fillStyle = 'rgba(60, 80, 95, 0.35)'
+      ctx.fillRect(x, y, 2, 2)
+    }
+  }
+
+  // Signature strip.
+  drawText(ctx, 'John Doe', 76, 176, {
+    size: 50,
+    family: FONT.script,
+    style: 'italic',
+    color: '#2b4a9b',
+    maxWidth: 360,
+  })
+  ctx.strokeStyle = 'rgba(43, 58, 74, 0.5)'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(76, 196)
+  ctx.lineTo(470, 196)
+  ctx.stroke()
+  drawText(ctx, 'SIGNATURE OF BEARER', 76, 218, {
+    size: 8,
+    family: FONT.mono,
+    color: muted,
+    tracking: 1.6,
+  })
+
+  // Fine print in two columns.
+  drawText(ctx, 'IMPORTANT INFORMATION', 60, 282, {
+    size: 10,
+    weight: 700,
+    family: FONT.mono,
+    color: ink,
+    tracking: 1.4,
+  })
+  const copyLeft =
+    'This souvenir card is issued by the photo booth for keepsakes only. It is not a passport, it does not prove identity, and it may not be used for travel.'
+  const copyRight =
+    'Every field is fictional and printed from the booth’s own data. Keep this card with your photographs; treat it as a prop, never as an official document.'
+  drawParagraph(ctx, copyLeft, 60, 302, 320, {
+    size: 7.5,
+    family: FONT.sans,
+    color: muted,
+  }, 11)
+  drawParagraph(ctx, copyRight, 420, 302, 300, {
+    size: 7.5,
+    family: FONT.sans,
+    color: muted,
+  }, 11)
+
+  // Side barcode and its readable number.
+  const random = seeded(29)
+  let barY = 54
+  while (barY < 420) {
+    const barHeight = 2 + random() * 4
+    ctx.fillStyle = 'rgba(43, 58, 74, 0.75)'
+    ctx.fillRect(776, barY, 34, barHeight)
+    barY += barHeight + 4
+  }
+  ctx.save()
+  ctx.translate(820, 420)
+  ctx.rotate(-Math.PI / 2)
+  drawText(ctx, 'P12345678', 0, 0, {
+    size: 8,
+    family: FONT.mono,
+    color: muted,
+    tracking: 2.4,
+  })
+  ctx.restore()
+
+  // Faint seal.
+  ctx.save()
+  ctx.translate(764, 442)
+  ctx.strokeStyle = 'rgba(47, 93, 138, 0.4)'
+  ctx.lineWidth = 1.2
+  circlePath(ctx, 0, 0, 18)
+  ctx.stroke()
+  circlePath(ctx, 0, 0, 13)
+  ctx.stroke()
+  star(ctx, 0, 0, 7, 3, 5, 'rgba(47, 93, 138, 0.5)')
+  ctx.restore()
+
+  // The fold between the two halves.
+  ctx.strokeStyle = 'rgba(43, 58, 74, 0.35)'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(26, 470)
+  ctx.lineTo(w - 26, 470)
+  ctx.stroke()
+  for (const x of [26, w - 26]) {
+    circlePath(ctx, x, 470, 3)
+    ctx.fillStyle = paper
+    ctx.fill()
+  }
+
+  // Watermark across the data half.
+  ctx.save()
+  ctx.beginPath()
+  ctx.rect(20, 486, w - 40, 560)
+  ctx.clip()
+  ctx.fillStyle = 'rgba(47, 93, 138, 0.026)'
+  for (let row = 0; row < 5; row += 1) {
+    for (let col = 0; col < 4; col += 1) {
+      drawText(ctx, 'YOUR COUNTRY', 34 + col * 210, 552 + row * 108, {
+        size: 22,
+        weight: 700,
+        family: FONT.sans,
+        color: 'rgba(47, 93, 138, 0.026)',
+        tracking: 4,
+      })
+    }
+  }
+  ctx.restore()
+
+  drawText(ctx, 'YOUR COUNTRY', w / 2, 528, {
+    size: 20,
+    weight: 700,
+    family: FONT.sans,
+    color: '#2f5d8a',
+    align: 'center',
+    tracking: 4,
+  })
+  drawText(ctx, 'PASSPORT', 60, 596, {
+    size: 22,
+    weight: 700,
+    family: FONT.sans,
+    color: ink,
+    tracking: 2,
+  })
+
+  // Type block across the top of the data page.
+  const field = (
+    x: number,
+    y: number,
+    label: string,
+    value: string,
+    size = 13,
+    maxWidth = 200,
+  ) => {
+    drawText(ctx, label, x, y, {
+      size: 6.5,
+      family: FONT.mono,
+      color: muted,
+      tracking: 1.2,
+    })
+    drawText(ctx, value, x, y + 16, {
+      size,
+      weight: 700,
+      family: FONT.sans,
+      color: ink,
+      maxWidth,
+      tracking: 0.4,
+    })
+  }
+  field(242, 556, 'TYPE', 'PP', 12, 60)
+  field(330, 556, 'ISSUING COUNTRY', 'CNTRY', 11, 130)
+  drawText(ctx, 'PASSPORT NO.', w - 64, 556, {
+    size: 6.5,
+    family: FONT.mono,
+    color: muted,
+    align: 'right',
+    tracking: 1.2,
+  })
+  drawText(ctx, passNo, w - 64, 576, {
+    size: 14,
+    weight: 700,
+    family: FONT.sans,
+    color: ink,
+    align: 'right',
+    tracking: 1,
+  })
+
+  // Portrait.
+  fillRound(ctx, 58, 618, 154, 204, 2, '#ffffff')
+  photo(ctx, photos[0], 62, 622, 146, 196, {
+    label: 'PHOTO 1',
+    tone: 'bw',
+    seed: 67,
+    placeholderBg: '#d5d0c2',
+    placeholderInk: '#5a6672',
+  })
+  strokeRound(ctx, 62, 622, 146, 196, 2, 'rgba(43, 58, 74, 0.4)', 1)
+
+  // Person glyph beside the number block.
+  ctx.save()
+  ctx.translate(700, 610)
+  ctx.fillStyle = 'rgba(120, 130, 135, 0.45)'
+  circlePath(ctx, 0, 0, 12)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.ellipse(0, 34, 24, 18, 0, Math.PI, 0)
+  ctx.fill()
+  ctx.restore()
+
+  field(242, 632, 'SURNAME', surname, 14, 190)
+  field(242, 692, 'NAME', given, 12, 200)
+  field(242, 752, 'NATIONALITY', 'COUNTRY', 11, 190)
+  field(242, 832, 'DATE OF ISSUE', issue, 11, 190)
+  field(242, 892, 'DATE OF EXPIRY', expiry, 11, 190)
+  field(452, 632, 'DATE OF BIRTH', '17 APR 1980', 11, 180)
+  field(452, 692, 'PLACE OF BIRTH', 'CITY / COUNTRY', 11, 180)
+  field(452, 832, 'AUTHORITY', 'PHOTO BOOTH 06', 11, 180)
+  field(452, 892, 'SEX', 'M', 12, 40)
+
+  // Globe.
+  ctx.save()
+  ctx.translate(356, 962)
+  ctx.strokeStyle = 'rgba(47, 93, 138, 0.55)'
+  ctx.lineWidth = 1.2
+  circlePath(ctx, 0, 0, 24)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.ellipse(0, 0, 9, 24, 0, 0, Math.PI * 2)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(-24, 0)
+  ctx.lineTo(24, 0)
+  ctx.stroke()
+  ctx.restore()
+
+  // Machine readable zone.
+  ctx.fillStyle = 'rgba(43, 58, 74, 0.06)'
+  ctx.fillRect(40, 1032, w - 80, 92)
+  ctx.strokeStyle = 'rgba(43, 58, 74, 0.25)'
+  ctx.lineWidth = 1
+  ctx.strokeRect(40, 1032, w - 80, 92)
+  const line1 = mrzLine(`P<CNTRY${surname}<<${given.replace(/ /g, '<')}`)
+  const line2 = mrzLine(
+    `${passNo}CNTRY${parts.short}${parts.monthNumber}${parts.day}M${String(expiryYear).slice(2)}${parts.monthNumber}${parts.day}<<<<<<06`,
+  )
+  drawText(ctx, line1, 54, 1066, {
+    size: 13,
+    weight: 600,
+    family: FONT.mono,
+    color: 'rgba(43, 58, 74, 0.85)',
+    tracking: 1,
+  })
+  drawText(ctx, line2, 54, 1098, {
+    size: 13,
+    weight: 600,
+    family: FONT.mono,
+    color: 'rgba(43, 58, 74, 0.85)',
+    tracking: 1,
+  })
+  drawText(ctx, 'SOUVENIR · NOT A TRAVEL DOCUMENT', w / 2, 1136, {
+    size: 7,
+    family: FONT.mono,
+    color: muted,
+    align: 'center',
+    tracking: 1.6,
+  })
+
+  gloss(ctx, 16, 16, w - 32, h - 32, { opacity: 0.06, angle: -0.5 })
+}
+
 export const PRINT_PAINTERS = {
   ticket: paintTicket,
   magazine: paintMagazine,
@@ -4067,4 +4354,5 @@ export const PRINT_PAINTERS = {
   cassetteBox: paintCassetteBox,
   gamecart: paintGameCart,
   vandals: paintVandals,
+  passportCard: paintPassportCard,
 }

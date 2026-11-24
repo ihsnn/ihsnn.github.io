@@ -23,6 +23,10 @@ export const ROUTES = {
   todo: '/todo',
   /** Hill-climb hauler: six routes, six loads, two pedals. */
   angkut: '/angkut',
+  /** Listening game: twenty synthesised sounds, pixel or real pictures. */
+  suara: '/suara',
+  /** Sports-adventure island: seven folk branches, seven scrolls, one torch. */
+  pekan: '/pekan',
   /** Boot screen of the console; every other scene hangs off it. */
   gameboy: '/gameboy',
 } as const

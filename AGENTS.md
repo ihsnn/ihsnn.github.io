@@ -41,6 +41,9 @@ src/content/piara.ts         pocket-pet copy: actions, moods, stages, naming she
 src/content/warkop.ts        warkop menu catalogue + page copy + rupiah helpers
 src/content/todo.ts          to-do copy, priorities, level titles, seed tasks, formatters
 src/content/angkut.ts        hill-climb levels (terrain, cargo, palette), garage, copy
+src/content/suara.ts         sound catalogue (40 sounds, categories), quiz constants, copy
+src/content/pekan/           island data (maps, NPCs, warps, the seven branches, teams)
+                             plus every page string — `island.ts`, `copy.ts`
 src/state/gameboy.ts         Recoil atoms (power, indices, envelope) — user state only
 src/lib/assets.ts            media registry + `remote()` seam for future CDN hosting
 src/lib/scroll.ts            scroll helpers that take an element (no #scroll lookups)
@@ -87,6 +90,15 @@ src/features/angkut/         AngkutPage, useAngkut.ts (loop + pedals + save), en
                              (rigid-body truck, 180 Hz, runs and pickups), terrain.ts
                              (seeded road + kicker ramps), render.ts (480 × 270 world),
                              audio.ts, save.ts, types.ts, angkut.css
+src/features/suara/          SuaraPage, SoundCard, SoundArt, SoundButton,
+                             FullscreenViewer, QuizPanel, useQuiz.ts (rounds),
+                             useSuara.ts (speaker + mute + art + best), audio.ts
+                             (20 recordings + synth fallback + blips), pixel.ts
+                             (SVG → 64 × 64 median-cut raster), storage.ts, suara.css
+src/features/pekan/          PekanPage, usePekan.ts (loop + input + autosave), game.ts
+                             (mode machine), world.ts (tiles, camera, warps, companion),
+                             save.ts, input.ts, sports/ (types, registry, archery),
+                             render/ (tiles, actors, ui, index), pekan.css, README.md
 public/                      static files served as-is (favicon, images)
 src/assets/                  images, sounds and fonts imported through src/lib/assets.ts
 story/                       story bible, cast/locations, chapter sheet, technical notes
@@ -96,8 +108,9 @@ There is **no backend**: no `functions/`, no Worker script, no `/api`. Everythin
 as static files.
 
 Routes come from `src/app/routes.ts` only: `/` shelf, `/pokescan`, `/arcade`, `/keluarga`,
-`/rakcerita`, `/photobooth`, `/piara`, `/warkop`, `/todo`, `/angkut`, `/gameboy` boot,
-`/gameboy/{menu,start,message,message-display,music,music-display,gallery}`, `*` → 404.
+`/rakcerita`, `/photobooth`, `/piara`, `/warkop`, `/todo`, `/angkut`, `/suara`, `/pekan`,
+`/gameboy`
+boot, `/gameboy/{menu,start,message,message-display,music,music-display,gallery}`, `*` → 404.
 `/gameboy/Gallery` is redirected in `AppRouter` (`LEGACY_REDIRECTS`). Never write a
 route string literal in a component — import it.
 
@@ -184,7 +197,7 @@ under `ihsnn:rakcerita:progress` and `ihsnn:rakcerita:settings` (localStorage).
 `rakcerita.css` is the old page stylesheet scoped to the `.rak-cerita` root: do not add
 unscoped selectors there, or the palette and the `border-radius:0` reset leak site-wide.
 
-**Photo Booth.** `features/photobooth/` is the 39-layout photo-strip cartridge at
+**Photo Booth.** `features/photobooth/` is the 41-layout photo-strip cartridge at
 `/photobooth`. The split is strict:
 - `content/photobooth.ts` is the whole catalogue (`STRIP_LAYOUTS`: copy, 1-or-2 slot
   count, design size, style id, shine, `date`, optional `motion`, picker theme,
@@ -331,6 +344,72 @@ stat, not a skin:
   from `LEVELS` and `GARAGE`. Cargo `mass`/`height`/`slide` are the level's difficulty
   dial; `shape` picks the painter.
 
+**TELINGA EMAS.** `features/suara/` is the listening game at `/suara`: forty sounds in
+four categories, two picture modes (8-bit drawing or real photograph), a quiz and a
+full-screen viewer.
+- `content/suara.ts` owns the catalogue (`SOUND_ITEMS`, category counts, `QUIZ_LENGTH`,
+  every string, the result bands); `lib/assets.ts` owns all three media sets — `SUARA_ART`
+  (one 240 × 240 SVG per sound), `SUARA_PHOTOS` (one 720 × 720 JPEG per sound) and
+  `SUARA_SOUNDS` (one trimmed MP3 per sound). Each photo and each recording carries its
+  CC attribution. The synth keys its fallback recipes on the same ids, so adding a sound
+  is: draw it, pick and credit a photo, pick and credit a recording, register all three,
+  add one catalogue entry, write one recipe.
+- `audio.ts` plays the recordings: fetch once, `decodeAudioData` once, one sound at a
+  time through the shared master bus and limiter, with a short fade in/out. The WebAudio
+  recipes stay as the fallback when a file is missing, still downloading, or undecodable —
+  and as the UI blips. A deliberate press unmutes; the quiz's auto-play passes
+  `force = false` so it stays quiet when muted. `playSound` is async and resolves with the
+  clip length (0 if a newer press won); `useSuara.play` guards late resolves with a token.
+- `pixel.ts` derives the Piksel view from the **drawing**: draw to 64 × 64, cut the
+  colours to twelve with a median-cut palette, upscale with nearest-neighbour. Never ship
+  a second raster for that mode. `prefetchPixelArt()` warms the cache after paint; the
+  hook itself only works in pixel mode. Real mode never goes through it — it shows
+  `item.photo.src` and falls back to the drawing if the file cannot load.
+- The photo set is CC BY / CC BY-SA / Public Domain Mark from Flickr; the sound set is
+  CC BY / CC BY-SA / CC0 / public domain from Wikimedia Commons, trimmed to their clearest
+  few seconds (the trim script lived in a throwaway `_art` folder, not in the repo).
+  Attribution is not optional: `photo.credit` and `sound.credit` are printed as links
+  under the caption in `FullscreenViewer` (sound always, photo in Real mode). Keep the
+  links, and update the credit when a photo or a recording is swapped.
+- `useQuiz.ts` is the rulebook (answers capped at the category size, same-category
+  distractors first, one pick per round, a `results` array for the dots). `QuizPanel` owns
+  a run, `useSuara.ts` owns mute, art mode and the best run. Keys: `ihsnn:suara:muted`,
+  `ihsnn:suara:art`, `ihsnn:suara:best`.
+- The full-screen view is a dialog that covers the viewport (`FullscreenViewer`) because
+  iOS Safari refuses element fullscreen; the Fullscreen API is an extra button when the
+  browser has it. Esc closes, arrows step, Tab stays trapped, body scroll locks.
+- `suara.css` is the cream listening station. Keep the coral speaker button physically
+  large (it is the cartridge's only control) and keep `image-rendering: pixelated` on
+  `.suara-art.is-pixel`; the full-screen figure is sized by `width: min(100%, 64vh, 600px)`
+  with `aspect-ratio: 1` so a 240 px drawing never renders at 240 px.
+
+**PEKAN RAYA.** `features/pekan/` is the folk-sports island at `/pekan`: a 320 × 240
+top-down village and rice fields, seven branch champions, seven scrolls and a torch at
+the summit. It is the largest cartridge; the shipped slice has the whole frame and one
+playable branch (PANAHAN).
+- `game.ts` is the mode machine (`title → world → dialogue | versus | sport | result`,
+  plus `debug`). It owns the versus card, the result card, the scroll award and the
+  save. Sports never touch React.
+- A branch is one module behind `SportRun`: `step(dt, input)`, `draw(ctx, time)`, a
+  `status`, two scores and an optional `sound()`. `sports/registry.ts` is the only map
+  from `SportId` to code — a branch catalogued in `content/pekan/island.ts` but absent
+  from the registry is not playable, and `startSport` refuses it.
+- `content/pekan/island.ts` builds maps with `grid`/`fill`/`put` instead of hand-typed
+  rows (a ragged row is the classic tilemap bug). Adding a screen is one `buildX()`,
+  one `MAPS` entry and a `WarpDef` on each side; NPCs, warps and teams are data there.
+- Movement is grid-locked with a 145 ms tween; `world.ts` holds collision, the camera
+  clamp and the cosmetic companion. Menus use the `upPressed`/`downPressed` edges in
+  `InputFrame`, never held directions — held keys used to cycle the title menu at sixty
+  steps a second.
+- `usePekan.ts` owns the rAF loop, the DPR canvas fit, the keyboard, the touch D-pad and
+  the pointer aim (drag, lift to shoot). A lifted pointer is cleared after the release
+  frame so it cannot keep overriding the keyboard on later shots.
+- `save.ts` is `ihsnn:pekan:save` (version 1: team, companion look, scrolls, coins, map,
+  position, flags), validated field by field. Nothing is written until the player starts
+  (`started` guard), so merely opening the page does not create a save.
+- `` ` `` opens the debug launcher. Add a target there whenever a branch or a screen is
+  added, or every test starts with a walk across the island.
+
 **Audio.** Each cartridge owns its sound. `features/gameboy/audio.ts` is the console's
 only audio owner: one ambient loop at a time (`playAmbient`/`stopAmbient`), UI blips
 (`playUiSound`), and a persisted mute flag (`useSoundMuted`, `toggleMuted`).
@@ -344,7 +423,11 @@ closing gong, muted under `ihsnn:warkop:muted`. TASK-9's `audio.ts` is a square/
 organizer speaker (completion blips climb with the combo), muted under
 `ihsnn:todo:muted`. ANGKUT's `audio.ts` is a diesel two-oscillator engine behind a
 low-pass (pitch follows speed and throttle) plus thumps and a coin blip, muted under
-`ihsnn:angkut:muted`. The story cartridge is currently silent.
+`ihsnn:angkut:muted`. TELINGA EMAS's `audio.ts` plays forty CC-licensed recordings
+(fetched and decoded once, with a synth recipe per id as the fallback), muted under
+`ihsnn:suara:muted`. PEKAN RAYA's `audio.ts` is a short cue synth (UI blips, bow, hit,
+win/lose, the scroll chime), muted under `ihsnn:pekan:muted`; its soundtrack is a later
+milestone. The story cartridge is currently silent.
 `use-sound` is no longer used — leave it installed but don't reach for it.
 
 **PokéScan.** All client-side, no API keys:
@@ -375,8 +458,8 @@ Worker script and no API route. If a server is ever needed, make it a real Worke
   refactored into components: `gameboy.css` (≈165 KB of chassis artwork, edit surgically),
   `stage.css` (page chrome + scaling), `scenes/scenes.css` (LCD typography).
   `pokescan.css`, `landing.css`, `arcade.css`, `keluarga.css`, `rakcerita.css`,
-  `photobooth.css`, `piara.css`, `warkop.css`, `todo.css` and `angkut.css` are the other
-  page sheets; shared chrome lives in `components/shared/shared.css`.
+  `photobooth.css`, `piara.css`, `warkop.css`, `todo.css`, `angkut.css`, `suara.css` and
+  `pekan.css` are the other page sheets; shared chrome lives in `components/shared/shared.css`.
   `rakcerita.css` is the exception to "no scoping": it is the old standalone page
   stylesheet, and every rule hangs off `.rak-cerita` on purpose.
 - Colours/fonts come from `src/styles/tokens.css`; extend it rather than re-declaring a
@@ -421,10 +504,11 @@ equivalent fallback.
 ## Media hosting (not done yet)
 
 Assets are bundled by Vite. `src/lib/assets.ts` is the single seam: it exports
-`IMAGES`, `GALLERY_IMAGES`, `SOUNDS`, `SCENE_MUSIC`, `SONGS` plus a `remote(path)` helper
-driven by `VITE_ASSET_BASE_URL` (see `.env.example`). To move to Cloudflare R2 later,
-upload `src/assets/**` and swap the import block for `remote()` calls — no screen or
-feature file should need to change. Keep new media imports inside that file.
+`IMAGES`, `GALLERY_IMAGES`, `SUARA_ART`, `SUARA_PHOTOS`, `SUARA_SOUNDS`, `SOUNDS`,
+`SCENE_MUSIC`, `SONGS` plus a `remote(path)` helper driven by `VITE_ASSET_BASE_URL`
+(see `.env.example`). To move to Cloudflare R2 later, upload `src/assets/**` and swap the
+import block for `remote()` calls — no screen or feature file should need to change. Keep
+new media imports inside that file.
 
 ## Environment notes (this Windows machine)
 

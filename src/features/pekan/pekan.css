@@ -1,0 +1,644 @@
+/* ==========================================================================
+   PEKAN RAYA — cartridge 12
+   --------------------------------------------------------------------------
+   A warm festival page around a 320 × 240 island screen. The island, the
+   people and the archery range are drawn by the feature's renderers; this
+   sheet is the page, the moulded frame and the control deck.
+   ========================================================================== */
+
+.pekan-page {
+  --pk-bg: #12100c;
+  --pk-ink: #f4ead2;
+  --pk-dim: #c8bda6;
+  --pk-faint: #8a7f6b;
+  --pk-gold: #e8b44c;
+  --pk-red: #c94f45;
+  --pk-green: #5f9e4a;
+  --pk-line: rgba(244, 234, 210, 0.12);
+
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  padding: calc(var(--gutter) + 10px) 0 calc(var(--gutter) + var(--safe-bottom));
+  background:
+    radial-gradient(ellipse 900px 520px at 14% -10%, rgba(232, 180, 76, 0.11), transparent 64%),
+    radial-gradient(ellipse 720px 460px at 92% 0%, rgba(201, 79, 69, 0.09), transparent 60%),
+    linear-gradient(180deg, #1c1710 0%, var(--pk-bg) 55%);
+  color: var(--pk-ink);
+}
+
+/* The festival stripe at the very top of the page. */
+.pekan-bunting {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 3;
+  height: 5px;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--pk-red) 0 22px,
+    var(--pk-gold) 22px 44px,
+    var(--pk-green) 44px 66px,
+    #f4ead2 66px 88px
+  );
+}
+
+.pekan-shell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: calc(var(--safe-top) + 6px) var(--gutter) 0;
+}
+
+.pekan-page .site-header__eyebrow {
+  color: var(--pk-gold);
+}
+
+.pekan-page .site-header__title em {
+  color: var(--pk-gold);
+  font-style: normal;
+}
+
+.pekan-page :where(button, a):focus-visible {
+  outline: 2px solid var(--pk-gold);
+  outline-offset: 3px;
+}
+
+/* ---------- Hero ---------- */
+
+.pekan-hero {
+  max-width: 730px;
+  margin: 6px 0 26px;
+}
+
+.pekan-hero__kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--pk-gold);
+}
+
+.pekan-hero__title {
+  margin: 0 0 12px;
+  font-family: var(--font-body);
+  font-size: clamp(26px, 4.4vw, 42px);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.pekan-hero__blurb {
+  margin: 0 0 18px;
+  max-width: 62ch;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--pk-dim);
+}
+
+.pekan-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pekan-badges li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid var(--pk-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.pekan-badges span {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--pk-faint);
+}
+
+.pekan-badges b {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  font-weight: 400;
+  color: var(--pk-gold);
+}
+
+/* ---------- Stage ---------- */
+
+.pekan-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 20px;
+  align-items: start;
+}
+
+.pekan-console {
+  padding: 15px 15px 13px;
+  border: 1px solid rgba(232, 180, 76, 0.24);
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, #2e2417 0%, #1e1810 52%, #17120c 100%);
+  box-shadow:
+    0 26px 60px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.pekan-screen {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 6px solid #0f0c08;
+  border-radius: 12px;
+  background: #0e1310;
+  box-shadow:
+    inset 0 0 0 2px rgba(232, 180, 76, 0.16),
+    inset 0 0 46px rgba(0, 0, 0, 0.65);
+}
+
+.pekan-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.pekan-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.03) 22%,
+    transparent 42%
+  );
+}
+
+/* ---------- Control deck ---------- */
+
+.pekan-deck {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+  padding: 0 4px;
+}
+
+.pekan-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 42px);
+  grid-template-rows: repeat(3, 42px);
+  gap: 3px;
+  padding: 6px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.pekan-pad__key {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(232, 180, 76, 0.22);
+  border-radius: 9px;
+  background: linear-gradient(180deg, #3b2f21 0%, #241d15 100%);
+  color: var(--pk-ink);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pekan-pad__key:active {
+  transform: translateY(1px);
+  background: linear-gradient(180deg, #2b2218 0%, #1b150f 100%);
+}
+
+.pekan-pad__hub {
+  width: 14px;
+  height: 14px;
+  margin: auto;
+  border-radius: 50%;
+  background: rgba(232, 180, 76, 0.18);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.pekan-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pekan-key {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border-radius: 50%;
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.06s ease;
+}
+
+.pekan-key:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.pekan-key--a {
+  border: 3px solid #7d2a22;
+  background: radial-gradient(circle at 34% 28%, #e8705f, #b83d33 70%);
+  color: #fff3e6;
+  box-shadow: 0 6px 0 #6c231c, 0 10px 18px rgba(0, 0, 0, 0.4);
+}
+
+.pekan-key--b {
+  width: 46px;
+  height: 46px;
+  font-size: 13px;
+  border: 3px solid #9c8963;
+  background: radial-gradient(circle at 34% 28%, #f4ead2, #cbb98f 72%);
+  color: #2a2118;
+  box-shadow: 0 5px 0 #8a7852, 0 9px 16px rgba(0, 0, 0, 0.35);
+}
+
+.pekan-mute {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--pk-line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--pk-dim);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pekan-mute.is-muted {
+  color: var(--pk-faint);
+  border-color: rgba(244, 234, 210, 0.08);
+}
+
+.pekan-note {
+  margin: 12px 4px 0;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--pk-faint);
+}
+
+/* ---------- Side cards ---------- */
+
+.pekan-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pekan-card {
+  padding: 16px;
+  border: 1px solid var(--pk-line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.pekan-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pekan-card__head h2 {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--pk-dim);
+}
+
+.pekan-card__head span {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--pk-faint);
+}
+
+.pekan-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pk-faint);
+  box-shadow: 0 0 0 3px rgba(232, 180, 76, 0.1);
+}
+
+.pekan-dot--world,
+.pekan-dot--sport {
+  background: var(--pk-green);
+}
+
+.pekan-dot--dialogue,
+.pekan-dot--versus {
+  background: var(--pk-gold);
+}
+
+.pekan-dot--result {
+  background: var(--pk-red);
+}
+
+.pekan-scrolls {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0 0 4px;
+}
+
+.pekan-scrolls b {
+  font-family: var(--font-pixel);
+  font-size: 30px;
+  font-weight: 400;
+  color: var(--pk-gold);
+  line-height: 1;
+}
+
+.pekan-scrolls span {
+  font-size: 12px;
+  color: var(--pk-faint);
+}
+
+.pekan-team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--pk-line);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--pk-faint);
+}
+
+.pekan-team b {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.pekan-status {
+  margin: 10px 0 14px;
+  font-size: 12px;
+  color: var(--pk-dim);
+}
+
+.pekan-progress {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pekan-progress li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px dashed rgba(244, 234, 210, 0.07);
+  font-size: 12px;
+  color: var(--pk-faint);
+}
+
+.pekan-progress li span {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--pk-faint);
+}
+
+.pekan-progress li em {
+  margin-left: auto;
+  padding: 2px 6px;
+  border: 1px solid var(--pk-line);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-style: normal;
+  letter-spacing: 0.1em;
+  color: var(--pk-faint);
+}
+
+.pekan-progress li[data-ready='true'] {
+  color: var(--pk-ink);
+}
+
+.pekan-progress li[data-ready='true'] em {
+  border-color: rgba(95, 158, 74, 0.4);
+  color: #9ed07f;
+}
+
+.pekan-card__note {
+  margin: 12px 0 0;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--pk-faint);
+}
+
+.pekan-keys {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pekan-keys div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px dashed rgba(244, 234, 210, 0.07);
+}
+
+.pekan-keys dt {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--pk-dim);
+}
+
+.pekan-keys dd {
+  margin: 0;
+  font-size: 11px;
+  color: var(--pk-faint);
+}
+
+/* ---------- Manual ---------- */
+
+.pekan-manual {
+  margin-top: 34px;
+  padding-top: 22px;
+  border-top: 1px solid var(--pk-line);
+}
+
+.pekan-manual__head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pekan-manual__head p {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--pk-faint);
+}
+
+.pekan-manual__head h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.pekan-manual ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 24px;
+}
+
+.pekan-manual li {
+  display: flex;
+  gap: 9px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--pk-dim);
+}
+
+.pekan-manual li span {
+  color: var(--pk-gold);
+  font-size: 7px;
+  line-height: 2.2;
+}
+
+.pekan-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 26px;
+  padding-top: 16px;
+  border-top: 1px solid var(--pk-line);
+  font-size: 11px;
+  color: var(--pk-faint);
+}
+
+.pekan-footer p {
+  margin: 0;
+  max-width: 62ch;
+  line-height: 1.6;
+}
+
+.pekan-footer a {
+  color: var(--pk-gold);
+  text-decoration: none;
+}
+
+.pekan-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 960px) {
+  .pekan-stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pekan-side {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .pekan-page {
+    padding-top: calc(var(--gutter) + 4px);
+  }
+
+  .pekan-console {
+    padding: 10px 10px 10px;
+    border-radius: 16px;
+  }
+
+  .pekan-screen {
+    border-width: 4px;
+    border-radius: 8px;
+  }
+
+  .pekan-pad {
+    grid-template-columns: repeat(3, 38px);
+    grid-template-rows: repeat(3, 38px);
+    gap: 2px;
+    padding: 4px;
+  }
+
+  .pekan-key {
+    width: 50px;
+    height: 50px;
+    font-size: 14px;
+  }
+
+  .pekan-key--b {
+    width: 42px;
+    height: 42px;
+    font-size: 12px;
+  }
+
+  .pekan-actions {
+    gap: 8px;
+  }
+
+  .pekan-mute {
+    width: 30px;
+    height: 30px;
+  }
+
+  .pekan-side {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pekan-manual ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
